@@ -15,8 +15,8 @@ export default function AdminMaxChars() {
 
   useEffect(() => {
     const stored = localStorage.getItem("adminData");
-    if (!stored) navigate("/admin/login");
-    else setAdminData(JSON.parse(stored));
+    if (!stored) navigate("/admin/login");else
+    setAdminData(JSON.parse(stored));
   }, []);
 
   useEffect(() => {
@@ -44,14 +44,14 @@ export default function AdminMaxChars() {
     const configs = await base44.entities.configs.filter({ chave: "max_chars_default" });
     if (configs.length > 0) {
       await base44.entities.configs.update(configs[0].id, {
-        valor: globalMax.toString(),
+        valor: globalMax.toString()
       });
     } else {
       await base44.entities.configs.create({
         chave: "max_chars_default",
         valor: globalMax.toString(),
         tipo: "numero",
-        descricao: "Limite padrão de caracteres para campos de texto",
+        descricao: "Limite padrão de caracteres para campos de texto"
       });
     }
   };
@@ -69,16 +69,16 @@ export default function AdminMaxChars() {
         <div className="flex-1 flex items-center justify-center">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
-      </div>
-    );
+      </div>);
+
   }
 
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar />
       <main className="flex-1 p-6 max-w-4xl">
-        <h1 className="font-heading text-2xl font-bold text-foreground mb-6">
-          Tamanho Máximo de Textos
+        <h1 className="font-heading text-2xl font-bold text-foreground mb-6">Tamanho máximo das respostas
+
         </h1>
 
         {/* Global */}
@@ -93,41 +93,41 @@ export default function AdminMaxChars() {
                 type="number"
                 value={globalMax}
                 onChange={(e) => setGlobalMax(parseInt(e.target.value))}
-                className="w-full px-4 py-2 rounded-xl border border-input bg-background"
-              />
+                className="w-full px-4 py-2 rounded-xl border border-input bg-background" />
+              
             </div>
             <Button onClick={handleSaveGlobal}>Salvar</Button>
           </div>
         </div>
 
         {/* Por pergunta */}
-        {perguntas.length > 0 && (
-          <div className="space-y-4">
+        {perguntas.length > 0 &&
+        <div className="space-y-4">
             <h2 className="font-heading font-bold text-lg">Por Pergunta</h2>
-            {perguntas.map((p) => (
-              <div key={p.id} className="bg-card rounded-2xl p-6 border border-border/50 shadow-sm">
+            {perguntas.map((p) =>
+          <div key={p.id} className="bg-card rounded-2xl p-6 border border-border/50 shadow-sm">
                 <label className="text-sm font-heading font-semibold block mb-2">
                   {p.titulo}
                 </label>
                 <input
-                  type="number"
-                  value={maxChars[p.id] ?? 500}
-                  onChange={(e) =>
-                    setMaxChars({
-                      ...maxChars,
-                      [p.id]: parseInt(e.target.value),
-                    })
-                  }
-                  className="w-full px-4 py-2 rounded-xl border border-input bg-background"
-                />
+              type="number"
+              value={maxChars[p.id] ?? 500}
+              onChange={(e) =>
+              setMaxChars({
+                ...maxChars,
+                [p.id]: parseInt(e.target.value)
+              })
+              }
+              className="w-full px-4 py-2 rounded-xl border border-input bg-background" />
+            
               </div>
-            ))}
+          )}
             <Button onClick={handleSavePerguntas} className="w-full">
               Salvar Todas
             </Button>
           </div>
-        )}
+        }
       </main>
-    </div>
-  );
+    </div>);
+
 }
