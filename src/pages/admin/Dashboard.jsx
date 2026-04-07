@@ -8,6 +8,8 @@ import Sidebar from "../../components/admin/Sidebar";
 import StatsCards from "../../components/admin/StatsCards";
 import NpsBarChart from "../../components/admin/NpsBarChart";
 import PromotersChart from "../../components/admin/PromotersChart";
+import AvaliacoesTimelineChart from "../../components/admin/AvaliacoesTimelineChart";
+import ConvidadosDistributionChart from "../../components/admin/ConvidadosDistributionChart";
 import AvaliacoesTable from "../../components/admin/AvaliacoesTable";
 import WordCloud from "../../components/admin/WordCloud";
 import FiltersBar from "../../components/admin/FiltersBar";
@@ -155,6 +157,8 @@ export default function Dashboard() {
                   <NpsBarChart avaliacoes={filtered} />
                   <PromotersChart avaliacoes={filtered} />
                 </div>
+                <AvaliacoesTimelineChart avaliacoes={filtered} />
+                <ConvidadosDistributionChart avaliacoes={filtered} />
                 <CorrelationsTable avaliacoes={filtered} />
                 <AvaliacoesTable avaliacoes={filtered} onDelete={handleDeleteAvaliacao} />
               </TabsContent>
