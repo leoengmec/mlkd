@@ -53,7 +53,7 @@ Deno.serve(async (req) => {
     }
 
     const senhaHash = await hashPassword(senha);
-    const admins = await base44.asServiceRole.entities.admins.filter({ email: email }, "", 1);
+    const admins = await base44.asServiceRole.entities.admins.filter({ email }, "", 1);
 
     if (!admins || admins.length === 0) {
       return Response.json({ error: "Email ou senha incorretos" }, { status: 401 });

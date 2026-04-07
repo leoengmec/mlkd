@@ -33,8 +33,7 @@
     },
     "obrigatorio": {
       "type": "boolean",
-      "title": "Obrigat\u00f3rio?",
-      "default": false
+      "title": "Obrigat\u00f3rio?"
     },
     "ordem": {
       "type": "number",
@@ -49,31 +48,12 @@
     },
     "ativo": {
       "type": "boolean",
-      "title": "Ativo?",
-      "default": true
+      "title": "Ativo?"
     }
   },
   "required": [
     "titulo",
     "tipo",
     "ordem"
-  ],
-  "rls": {
-    "create": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "read": {},
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }
