@@ -7,32 +7,12 @@ import { base44 } from "@/api/base44Client";
 import Confetti from "../components/Confetti";
 
 export default function Confirmacao() {
-  const [npsMedia, setNpsMedia] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [showConfetti, setShowConfetti] = useState(true);
 
   useEffect(() => {
-    const fetchMedia = async () => {
-      const avaliacoes = await base44.entities.avaliacoes.list();
-      if (avaliacoes.length > 0) {
-        const total = avaliacoes.reduce((sum, a) => sum + (a.nps_geral || 0), 0);
-        setNpsMedia((total / avaliacoes.length).toFixed(1));
-      }
-      setLoading(false);
-    };
-    fetchMedia();
-
     const timer = setTimeout(() => setShowConfetti(false), 3000);
     return () => clearTimeout(timer);
   }, []);
-
-  const getNpsColor = (value) => {
-    if (!value) return "text-muted-foreground";
-    if (value >= 9) return "text-green-500";
-    if (value >= 7) return "text-secondary";
-    if (value >= 5) return "text-amber-500";
-    return "text-red-500";
-  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4 py-8 relative overflow-hidden">
@@ -68,32 +48,11 @@ export default function Confirmacao() {
           <h1 className="font-heading text-3xl font-extrabold text-foreground mb-2">
             Obrigado! 🎉
           </h1>
-          <p className="text-muted-foreground font-body mb-6">
+          <p className="text-muted-foreground font-body mb-8">
             Sua avaliação foi registrada com sucesso.
             <br />
             Ela nos ajuda a melhorar cada vez mais!
           </p>
-
-          <div className="bg-muted/50 rounded-xl p-5 mb-6">
-            <p className="text-sm text-muted-foreground font-heading mb-1">
-              NPS médio atual
-            </p>
-            {loading ? (
-              <div className="h-10 flex items-center justify-center">
-                <div className="w-6 h-6 border-3 border-muted-foreground/30 border-t-primary rounded-full animate-spin" />
-              </div>
-            ) : (
-              <motion.p
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.6, type: "spring" }}
-                className={`text-5xl font-extrabold font-heading ${getNpsColor(parseFloat(npsMedia))}`}
-              >
-                {npsMedia || "—"}
-                <span className="text-lg text-muted-foreground font-normal ml-1">/10</span>
-              </motion.p>
-            )}
-          </div>
 
           <Link to="/">
             <Button
