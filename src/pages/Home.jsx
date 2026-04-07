@@ -31,7 +31,7 @@ export default function Home() {
             alt="Mulekada Buffet"
             animate={{ y: [0, -8, 0] }}
             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            className="w-52 h-52 sm:w-64 sm:h-64 object-contain drop-shadow-2xl rounded-full"
+            className="w-32 h-32 sm:w-40 sm:h-40 object-contain drop-shadow-2xl rounded-full"
           />
         </motion.div>
 
