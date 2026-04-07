@@ -10,6 +10,7 @@ import NpsBarChart from "../../components/admin/NpsBarChart";
 import PromotersChart from "../../components/admin/PromotersChart";
 import AvaliacoesTimelineChart from "../../components/admin/AvaliacoesTimelineChart";
 import ConvidadosDistributionChart from "../../components/admin/ConvidadosDistributionChart";
+import CorrelationsInsights from "../../components/admin/CorrelationsInsights";
 import AvaliacoesTable from "../../components/admin/AvaliacoesTable";
 import WordCloud from "../../components/admin/WordCloud";
 import FiltersBar from "../../components/admin/FiltersBar";
@@ -159,6 +160,7 @@ export default function Dashboard() {
                 </div>
                 <AvaliacoesTimelineChart avaliacoes={filtered} />
                 <ConvidadosDistributionChart avaliacoes={filtered} />
+                <CorrelationsInsights avaliacoes={filtered} />
                 <CorrelationsTable avaliacoes={filtered} />
                 <AvaliacoesTable avaliacoes={filtered} onDelete={handleDeleteAvaliacao} />
               </TabsContent>
