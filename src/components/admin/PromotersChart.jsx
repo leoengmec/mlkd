@@ -18,12 +18,20 @@ export default function PromotersChart({ avaliacoes }) {
   const npsScore = total > 0 ? Math.round(((promotores - detratores) / total) * 100) : 0;
 
   return (
-    <div className="bg-card rounded-2xl p-5 border border-border/50 shadow-sm">
+    <TooltipProvider>
+      <div className="bg-card rounded-2xl p-5 border border-border/50 shadow-sm">
       <div className="flex items-center justify-between mb-2">
         <h3 className="font-heading font-bold text-foreground">Promotores / Detratores</h3>
-        <span className="text-sm font-heading font-bold text-primary bg-primary/10 px-3 py-1 rounded-full">
-          NPS {npsScore}
-        </span>
+         <TooltipUI>
+          <TooltipTrigger asChild>
+            <span className="text-sm font-heading font-bold text-primary bg-primary/10 px-3 py-1 rounded-full cursor-help hover:bg-primary/20 transition-colors">
+              NPS {npsScore}
+            </span>
+          </TooltipTrigger>
+          <TooltipContent className="bg-card border border-border text-foreground text-xs max-w-xs">
+            Net Promoter Score: métrica que mede a lealdade dos clientes. Varia de -100 a +100. Acima de 50 é excelente.
+          </TooltipContent>
+          </TooltipUI>
       </div>
       {total === 0 ? (
         <p className="text-muted-foreground text-sm text-center py-10">Sem dados</p>
@@ -64,6 +72,7 @@ export default function PromotersChart({ avaliacoes }) {
           </div>
         </>
       )}
-    </div>
+      </div>
+    </TooltipProvider>
   );
 }
