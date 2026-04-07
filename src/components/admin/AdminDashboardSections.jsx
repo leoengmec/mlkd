@@ -270,20 +270,39 @@ export function PerguntasSection() {
 
 // GERAR AVALIACAO LINK
 export function GerarAvaliacaoSection() {
+  const [shortLink, setShortLink] = useState(null);
+  const [loading, setLoading] = useState(false);
   const baseUrl = window.location.origin;
   const link = `${baseUrl}/avaliacao`;
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(link)}`;
-  const whatsappText = `Deixe sua avaliação da festa aqui: ${link}`;
+
+  useEffect(() => {
+    const shortenLink = async () => {
+      setLoading(true);
+      try {
+        const response = await base44.functions.invoke('shortenUrl', { url: link });
+        setShortLink(response.data.shortUrl);
+      } catch (e) {
+        console.error(e);
+        setShortLink(link);
+      }
+      setLoading(false);
+    };
+    shortenLink();
+  }, [link]);
+
+  const displayLink = shortLink || link;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(displayLink)}`;
+  const whatsappText = `Deixe sua avaliação da festa aqui: ${displayLink}`;
 
   return (
     <div className="space-y-6">
       <h2 className="font-heading font-bold text-xl">🔗 Gerar Link/QR Avaliação</h2>
       <div className="bg-card rounded-2xl p-4 border border-border space-y-4">
         <div className="space-y-2">
-          <label className="text-sm font-semibold">Link de Avaliação</label>
+          <label className="text-sm font-semibold">Link de Avaliação (Encurtado)</label>
           <div className="flex gap-2">
-            <Input readOnly value={link} className="flex-1" />
-            <Button onClick={() => { navigator.clipboard.writeText(link); toast.success("Copiado!"); }}><Copy className="w-4 h-4" /></Button>
+            <Input readOnly value={displayLink} className="flex-1" />
+            <Button onClick={() => { navigator.clipboard.writeText(displayLink); toast.success("Copiado!"); }} disabled={loading}><Copy className="w-4 h-4" /></Button>
           </div>
         </div>
         <div className="space-y-2">
