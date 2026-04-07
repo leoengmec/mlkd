@@ -29,13 +29,13 @@ export default function PromotersChart({ avaliacoes }) {
         <p className="text-muted-foreground text-sm text-center py-10">Sem dados</p>
       ) : (
         <>
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={300}>
             <PieChart>
-              <Pie data={data} cx="50%" cy="50%" outerRadius={80} dataKey="value" label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`} labelLine={false}>
+              <Pie data={data} cx="50%" cy="40%" outerRadius={70} dataKey="value" label={({ percent }) => `${(percent * 100).toFixed(0)}%`} labelLine={false}>
                 {data.map((_, i) => <Cell key={i} fill={COLORS[i]} />)}
               </Pie>
-              <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid hsl(var(--border))", background: "hsl(var(--card))", fontSize: "12px" }} />
-              <Legend />
+              <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid hsl(var(--border))", background: "hsl(var(--card))", fontSize: "11px" }} />
+              <Legend wrapperStyle={{ paddingTop: "20px" }} />
             </PieChart>
           </ResponsiveContainer>
           <div className="grid grid-cols-3 gap-3 mt-6">
@@ -49,9 +49,9 @@ export default function PromotersChart({ avaliacoes }) {
                 return (
                   <TooltipUI key={d.name}>
                     <TooltipTrigger asChild>
-                      <div className="rounded-xl p-3 cursor-help transition-all hover:scale-105" style={{ background: `${COLORS[i]}20` }}>
-                        <p className="text-2xl font-bold font-heading" style={{ color: COLORS[i] }}>{d.value}</p>
-                        <p className="text-sm font-heading text-foreground mt-1">{d.name.split(" ")[0]}</p>
+                      <div className="rounded-xl p-4 cursor-help transition-all hover:scale-105" style={{ background: `${COLORS[i]}20` }}>
+                        <p className="text-3xl font-bold font-heading" style={{ color: COLORS[i] }}>{d.value}</p>
+                        <p className="text-xs font-heading text-foreground mt-2 leading-snug">{d.name.split(" ")[0]}</p>
                       </div>
                     </TooltipTrigger>
                     <TooltipContent className="bg-card border border-border text-foreground text-xs max-w-xs">
