@@ -1,15 +1,18 @@
 import { Link, useLocation } from "react-router-dom";
-import { LayoutGrid, Settings, BookOpen, Sliders, Type, Sparkles } from "lucide-react";
+import { LayoutGrid, Settings, BookOpen, Sliders, Type, Sparkles, Shield, Users, ToggleRight, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
   { label: "Dashboard", href: "/admin", icon: LayoutGrid },
+  { label: "Gerenciar Admins", href: "/admin/admins", icon: Shield },
   { label: "Cadastrar Temas", href: "/admin/temas", icon: BookOpen },
+  { label: "Opções Nº Convidados", href: "/admin/opcoes-convidados", icon: Users },
   { label: "Gerenciar Perguntas", href: "/admin/perguntas", icon: Settings },
   { label: "Configurar Escala", href: "/admin/escala", icon: Sliders },
   { label: "Tamanho das respostas", href: "/admin/max-chars", icon: Type },
+  { label: "Configs Gerais", href: "/admin/configs", icon: ToggleRight },
+  { label: "Audit Log", href: "/admin/audit", icon: Clock },
   { label: "Análises Avançadas", href: "/admin/analises", icon: Sparkles },
-  { label: "Configurações", href: "/admin/config", icon: Settings },
 ];
 
 export default function Sidebar() {

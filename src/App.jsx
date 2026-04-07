@@ -19,6 +19,10 @@ import AdminEscala from './pages/admin/Escala';
 import AdminMaxChars from './pages/admin/MaxChars';
 import AdminAnalises from './pages/admin/Analises';
 import AdminConfig from './pages/admin/Config';
+import AdminUsers from './pages/admin/AdminUsers';
+import ConfigsGerais from './pages/admin/ConfigsGerais';
+import AuditLog from './pages/admin/AuditLog';
+import OpcoesCconvidados from './pages/admin/OpcoesCconvidados';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -53,10 +57,14 @@ const AuthenticatedApp = () => {
       <Route path="/meus-dados" element={<MeusDados />} />
       <Route path="/admin/login" element={<AdminLogin />} />
       <Route path="/admin" element={<AdminDashboard />} />
+      <Route path="/admin/admins" element={<AdminUsers />} />
       <Route path="/admin/temas" element={<AdminTemas />} />
+      <Route path="/admin/opcoes-convidados" element={<OpcoesCconvidados />} />
       <Route path="/admin/perguntas" element={<AdminPerguntas />} />
       <Route path="/admin/escala" element={<AdminEscala />} />
       <Route path="/admin/max-chars" element={<AdminMaxChars />} />
+      <Route path="/admin/configs" element={<ConfigsGerais />} />
+      <Route path="/admin/audit" element={<AuditLog />} />
       <Route path="/admin/analises" element={<AdminAnalises />} />
       <Route path="/admin/config" element={<AdminConfig />} />
       <Route path="*" element={<PageNotFound />} />
