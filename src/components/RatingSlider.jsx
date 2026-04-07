@@ -21,7 +21,7 @@ export default function RatingSlider({ label, value, onChange, icon }) {
       <div className="flex items-center justify-between">
         <span className="text-sm font-semibold font-heading text-foreground flex items-center gap-2">
           {icon && <span className="text-lg">{icon}</span>}
-          {label}
+          {label === "NPS Geral" ? "Nota Geral" : label}
         </span>
         <div className="flex items-center gap-1.5">
           <span className="text-lg">{getEmoji(value)}</span>
