@@ -18,21 +18,26 @@ export default function AdminLogin() {
     setError("");
     setLoading(true);
 
-    const response = await base44.functions.invoke("verifyAdminLogin", {
-      email,
-      senha,
-    });
+    try {
+      const response = await base44.functions.invoke("verifyAdminLogin", {
+        email,
+        senha,
+      });
 
-    if (response.data?.success) {
-      localStorage.setItem("adminData", JSON.stringify(response.data.admin));
-      navigate("/admin");
-    } else {
-      setError(response.data?.error || "Erro ao fazer login");
+      if (response.data?.success) {
+        localStorage.setItem("adminData", JSON.stringify(response.data.admin));
+        navigate("/admin");
+      } else {
+        setError(response.data?.error || "Erro ao fazer login");
+        setSenha("");
+      }
+    } catch (err) {
+      setError(err.response?.data?.error || "Erro de conexão. Tente novamente.");
       setSenha("");
     }
 
     setLoading(false);
-  };
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/20 via-background to-secondary/20 flex items-center justify-center px-4 py-8">
