@@ -4,6 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Loader2, LayoutDashboard, LogOut, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Sidebar from "../../components/admin/Sidebar";
 import StatsCards from "../../components/admin/StatsCards";
 import NpsBarChart from "../../components/admin/NpsBarChart";
 import PromotersChart from "../../components/admin/PromotersChart";
@@ -52,9 +53,11 @@ export default function Dashboard() {
   if (!adminData) return null;
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-20 bg-card border-b border-border px-4 py-3 flex items-center justify-between shadow-sm">
+    <div className="flex min-h-screen bg-background">
+      <Sidebar />
+      <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <header className="sticky top-0 z-20 bg-card border-b border-border px-4 py-3 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
           <img
             src="https://media.base44.com/images/public/69d5512a4585ccb7cb7b0fd6/8ae34c042_mlkd.jpg"
@@ -80,7 +83,7 @@ export default function Dashboard() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 py-6 space-y-6">
+        <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-6 space-y-6">
         {/* Filters */}
         <FiltersBar filters={filters} onChange={setFilters} avaliacoes={avaliacoes} />
 
@@ -116,7 +119,8 @@ export default function Dashboard() {
             <IaAnalysis avaliacoes={filtered} userEmail={adminData?.email} />
           </TabsContent>
         </Tabs>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }

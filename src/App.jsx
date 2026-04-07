@@ -10,6 +10,12 @@ import Formulario from './pages/Formulario';
 import Confirmacao from './pages/Confirmacao';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminLogin from './pages/admin/Login';
+import AdminTemas from './pages/admin/Temas';
+import AdminPerguntas from './pages/admin/Perguntas';
+import AdminEscala from './pages/admin/Escala';
+import AdminMaxChars from './pages/admin/MaxChars';
+import AdminAnalises from './pages/admin/Analises';
+import AdminConfig from './pages/admin/Config';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -42,6 +48,12 @@ const AuthenticatedApp = () => {
       <Route path="/confirmacao" element={<Confirmacao />} />
       <Route path="/admin/login" element={<AdminLogin />} />
       <Route path="/admin" element={<AdminDashboard />} />
+      <Route path="/admin/temas" element={<AdminTemas />} />
+      <Route path="/admin/perguntas" element={<AdminPerguntas />} />
+      <Route path="/admin/escala" element={<AdminEscala />} />
+      <Route path="/admin/max-chars" element={<AdminMaxChars />} />
+      <Route path="/admin/analises" element={<AdminAnalises />} />
+      <Route path="/admin/config" element={<AdminConfig />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
