@@ -29,8 +29,12 @@ export default function Home() {
           <motion.img
             src="https://media.base44.com/images/public/69d5512a4585ccb7cb7b0fd6/8ae34c042_mlkd.jpg"
             alt="Mulekada Buffet"
-            animate={{ y: [0, -8, 0] }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            animate={{
+              y: [0, -10, 0],
+              rotate: [0, 3, -3, 0],
+              scale: [1, 1.05, 1],
+            }}
+            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
             className="w-32 h-32 sm:w-40 sm:h-40 object-contain drop-shadow-2xl rounded-full"
           />
         </motion.div>
