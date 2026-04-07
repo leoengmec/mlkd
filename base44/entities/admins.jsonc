@@ -1,0 +1,37 @@
+{
+  "name": "admins",
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string",
+      "title": "Email",
+      "format": "email"
+    },
+    "senha_hash": {
+      "type": "string",
+      "title": "Senha (Hash)"
+    },
+    "nome": {
+      "type": "string",
+      "title": "Nome"
+    },
+    "ativo": {
+      "type": "boolean",
+      "title": "Ativo?",
+      "default": true
+    },
+    "ultimo_acesso": {
+      "type": "string",
+      "title": "\u00daltimo Acesso"
+    }
+  },
+  "required": [
+    "email",
+    "senha_hash"
+  ],
+  "indexes": {
+    "email": {
+      "unique": true
+    }
+  }
+}

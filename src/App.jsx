@@ -9,6 +9,7 @@ import Home from './pages/Home';
 import Formulario from './pages/Formulario';
 import Confirmacao from './pages/Confirmacao';
 import AdminDashboard from './pages/admin/Dashboard';
+import AdminLogin from './pages/admin/Login';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -39,6 +40,7 @@ const AuthenticatedApp = () => {
       <Route path="/" element={<Home />} />
       <Route path="/formulario" element={<Formulario />} />
       <Route path="/confirmacao" element={<Confirmacao />} />
+      <Route path="/admin/login" element={<AdminLogin />} />
       <Route path="/admin" element={<AdminDashboard />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>

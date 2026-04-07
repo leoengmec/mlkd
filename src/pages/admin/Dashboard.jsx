@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/lib/AuthContext";
 import { base44 } from "@/api/base44Client";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Loader2, LayoutDashboard, LogOut, Sparkles } from "lucide-react";
@@ -15,26 +14,24 @@ import ExportButtons from "../../components/admin/ExportButtons";
 import IaAnalysis from "../../components/admin/IaAnalysis";
 
 export default function Dashboard() {
-  const { user, isLoadingAuth } = useAuth();
   const navigate = useNavigate();
   const [avaliacoes, setAvaliacoes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({ dataInicio: "", dataFim: "", tema: "", mes: "" });
+  const [adminData, setAdminData] = useState(null);
 
   useEffect(() => {
-    if (!isLoadingAuth && user?.role !== "admin") {
-      navigate("/");
-    }
-  }, [user, isLoadingAuth]);
-
-  useEffect(() => {
-    if (user?.role === "admin") {
+    const stored = localStorage.getItem("adminData");
+    if (!stored) {
+      navigate("/admin/login");
+    } else {
+      setAdminData(JSON.parse(stored));
       base44.entities.avaliacoes.list("-data_envio", 500).then((data) => {
         setAvaliacoes(data);
         setLoading(false);
       });
     }
-  }, [user]);
+  }, []);
 
   const filtered = avaliacoes.filter((a) => {
     if (filters.tema && !a.tema?.toLowerCase().includes(filters.tema.toLowerCase())) return false;
@@ -44,7 +41,7 @@ export default function Dashboard() {
     return true;
   });
 
-  if (isLoadingAuth || loading) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -52,7 +49,7 @@ export default function Dashboard() {
     );
   }
 
-  if (user?.role !== "admin") return null;
+  if (!adminData) return null;
 
   return (
     <div className="min-h-screen bg-background">
@@ -73,8 +70,11 @@ export default function Dashboard() {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-xs text-muted-foreground hidden sm:block">{user?.email}</span>
-          <Button variant="ghost" size="sm" onClick={() => base44.auth.logout("/")}>
+          <span className="text-xs text-muted-foreground hidden sm:block">{adminData?.email}</span>
+          <Button variant="ghost" size="sm" onClick={() => {
+          localStorage.removeItem("adminData");
+          navigate("/admin/login");
+        }}>
             <LogOut className="w-4 h-4 mr-1" /> Sair
           </Button>
         </div>
@@ -113,7 +113,7 @@ export default function Dashboard() {
           </TabsContent>
 
           <TabsContent value="ia" className="space-y-6">
-            <IaAnalysis avaliacoes={filtered} userEmail={user?.email} />
+            <IaAnalysis avaliacoes={filtered} userEmail={adminData?.email} />
           </TabsContent>
         </Tabs>
       </main>
