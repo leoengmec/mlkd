@@ -14,6 +14,7 @@ import CookieBanner from './components/CookieBanner';
 import AdminHome from './pages/admin/Home';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminLogin from './pages/admin/Login';
+import AdminLanding from './pages/admin/Landing';
 import AdminTemas from './pages/admin/Temas';
 import AdminPerguntas from './pages/admin/Perguntas';
 import AdminEscala from './pages/admin/Escala';
@@ -57,7 +58,8 @@ const AuthenticatedApp = () => {
       <Route path="/privacidade" element={<Privacidade />} />
       <Route path="/meus-dados" element={<MeusDados />} />
       <Route path="/admin/login" element={<AdminLogin />} />
-      <Route path="/admin" element={<AdminDashboard />} />
+      <Route path="/admin" element={<AdminLanding />} />
+      <Route path="/admin/dashboard" element={<AdminDashboard />} />
       <Route path="/admin/home" element={<AdminHome />} />
       <Route path="/admin/admins" element={<AdminUsers />} />
       <Route path="/admin/temas" element={<AdminTemas />} />

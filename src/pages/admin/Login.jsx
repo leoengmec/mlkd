@@ -26,8 +26,7 @@ export default function AdminLogin() {
 
       if (response.data?.success) {
         localStorage.setItem("adminData", JSON.stringify(response.data.admin));
-        navigate("/admin");
-      } else {
+        navigate("/admin/home");
         setError(response.data?.error || "Erro ao fazer login");
         setSenha("");
       }
