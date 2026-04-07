@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { LayoutGrid, Settings, BookOpen, Sliders, Type, Sparkles, Shield, Users, ToggleRight, Clock, Link as LinkIcon, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,6 @@ const menuItems = [
 
 export default function Sidebar() {
   const location = useLocation();
-  const navigate = useNavigate();
 
   return (
     <aside className="w-64 bg-card border-r border-border hidden lg:flex flex-col h-screen sticky top-0">
@@ -60,15 +59,9 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-border space-y-3">
-        <p className="font-semibold text-xs text-muted-foreground">v1.0</p>
-        <Button variant="ghost" size="sm" className="w-full justify-start text-xs" onClick={() => {
-          localStorage.removeItem("adminData");
-          navigate("/admin/login");
-        }}>
-          <LogOut className="w-4 h-4 mr-2" /> Sair
-        </Button>
-        <p className="text-xs text-muted-foreground">© 2026 Mulekada Buffet</p>
+      <div className="p-4 border-t border-border text-xs text-muted-foreground">
+        <p className="font-semibold mb-1">v1.0</p>
+        <p>© 2026 Mulekada Buffet</p>
       </div>
     </aside>
   );
