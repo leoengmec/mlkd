@@ -1,24 +1,32 @@
 import { Link, useLocation } from "react-router-dom";
-import { LayoutGrid, Settings, BookOpen, Sliders, Type, Sparkles, Shield, Users, ToggleRight, Clock, Link as LinkIcon, LogOut } from "lucide-react";
+import { LayoutGrid, Settings, BookOpen, Sliders, Type, Sparkles, Shield, Users, ToggleRight, Clock, Link as LinkIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 
 const menuItems = [
-  { label: "Dashboard", href: "/admin", icon: LayoutGrid },
-  { label: "Gerenciar Admins", href: "/admin?section=admins", icon: Shield },
-  { label: "Cadastrar Temas", href: "/admin/temas", icon: BookOpen },
-  { label: "Opções Nº Convidados", href: "/admin/opcoes-convidados", icon: Users },
-  { label: "Gerenciar Perguntas", href: "/admin?section=perguntas", icon: Settings },
-  { label: "Configurar Escala", href: "/admin/escala", icon: Sliders },
-  { label: "Tamanho das respostas", href: "/admin/max-chars", icon: Type },
-  { label: "Configs Gerais", href: "/admin/configs", icon: ToggleRight },
-  { label: "Audit Log", href: "/admin/audit", icon: Clock },
-  { label: "Análises Avançadas", href: "/admin/analises", icon: Sparkles },
-  { label: "Gerar Link/QR", href: "/admin?section=gerar-link", icon: LinkIcon },
+  { label: "Dashboard", href: "/admin", section: null, icon: LayoutGrid },
+  { label: "Gerenciar Admins", href: "/admin", section: "admins", icon: Shield },
+  { label: "Cadastrar Temas", href: "/admin/temas", section: null, icon: BookOpen },
+  { label: "Opções Nº Convidados", href: "/admin/opcoes-convidados", section: null, icon: Users },
+  { label: "Gerenciar Perguntas", href: "/admin", section: "perguntas", icon: Settings },
+  { label: "Configurar Escala", href: "/admin/escala", section: null, icon: Sliders },
+  { label: "Tamanho das respostas", href: "/admin/max-chars", section: null, icon: Type },
+  { label: "Configs Gerais", href: "/admin/configs", section: null, icon: ToggleRight },
+  { label: "Audit Log", href: "/admin/audit", section: null, icon: Clock },
+  { label: "Análises Avançadas", href: "/admin/analises", section: null, icon: Sparkles },
+  { label: "Gerar Link/QR", href: "/admin", section: "gerar-link", icon: LinkIcon },
 ];
 
 export default function Sidebar() {
   const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const currentSection = params.get("section");
+
+  const isMenuActive = (item) => {
+    if (item.section) {
+      return currentSection === item.section;
+    }
+    return location.pathname === item.href;
+  };
 
   return (
     <aside className="w-64 bg-card border-r border-border hidden lg:flex flex-col h-screen sticky top-0">
@@ -39,11 +47,11 @@ export default function Sidebar() {
       <nav className="flex-1 overflow-y-auto p-4 space-y-1">
         {menuItems.map((item) => {
           const Icon = item.icon;
-          const isActive = location.pathname === item.href;
+          const isActive = isMenuActive(item);
           return (
             <Link
-              key={item.href}
-              to={item.href}
+              key={item.label}
+              to={item.section ? `/admin?section=${item.section}` : item.href}
               className={cn(
                 "flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-heading font-semibold transition-all",
                 isActive
