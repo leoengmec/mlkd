@@ -1,4 +1,5 @@
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { Tooltip as TooltipUI, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const COLORS = ["#22c55e", "#f59e0b", "#ef4444"];
 
@@ -33,17 +34,33 @@ export default function PromotersChart({ avaliacoes }) {
               <Pie data={data} cx="50%" cy="50%" outerRadius={80} dataKey="value" label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`} labelLine={false}>
                 {data.map((_, i) => <Cell key={i} fill={COLORS[i]} />)}
               </Pie>
-              <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid hsl(var(--border))", background: "hsl(var(--card))" }} />
+              <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid hsl(var(--border))", background: "hsl(var(--card))", fontSize: "12px" }} />
               <Legend />
             </PieChart>
           </ResponsiveContainer>
-          <div className="grid grid-cols-3 gap-2 mt-2 text-center">
-            {data.map((d, i) => (
-              <div key={d.name} className="rounded-xl p-2" style={{ background: `${COLORS[i]}20` }}>
-                <p className="text-lg font-bold font-heading" style={{ color: COLORS[i] }}>{d.value}</p>
-                <p className="text-xs text-muted-foreground">{d.name.split(" ")[0]}</p>
-              </div>
-            ))}
+          <div className="grid grid-cols-3 gap-3 mt-6">
+            <TooltipProvider>
+              {data.map((d, i) => {
+                const descriptions = [
+                  "Clientes muito satisfeitos (nota 9-10) que indicariam a empresa",
+                  "Clientes satisfeitos (nota 7-8) mas com potencial de melhoria",
+                  "Clientes insatisfeitos (nota 0-6) que podem desencorajar outros"
+                ];
+                return (
+                  <TooltipUI key={d.name}>
+                    <TooltipTrigger asChild>
+                      <div className="rounded-xl p-3 cursor-help transition-all hover:scale-105" style={{ background: `${COLORS[i]}20` }}>
+                        <p className="text-2xl font-bold font-heading" style={{ color: COLORS[i] }}>{d.value}</p>
+                        <p className="text-sm font-heading text-foreground mt-1">{d.name.split(" ")[0]}</p>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-card border border-border text-foreground text-xs max-w-xs">
+                      {descriptions[i]}
+                    </TooltipContent>
+                  </TooltipUI>
+                );
+              })}
+            </TooltipProvider>
           </div>
         </>
       )}
