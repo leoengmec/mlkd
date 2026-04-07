@@ -16,6 +16,9 @@ import IaAnalysis from "../../components/admin/IaAnalysis";
 import CorrelationsTable from "../../components/admin/CorrelationsTable";
 import { AdminsSection, PerguntasSection, GerarAvaliacaoSection } from "../../components/admin/AdminDashboardSections";
 import Footer from "../../components/Footer";
+import NotificationCenter from "../../components/admin/NotificationCenter";
+import { useNotifications } from "../../hooks/useNotifications";
+import { useAvaliacaoListener } from "../../hooks/useAvaliacaoListener";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -25,6 +28,25 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({ dataInicio: "", dataFim: "", tema: "", mes: "" });
   const [adminData, setAdminData] = useState(null);
+  const { notifications, addNotification, removeNotification } = useNotifications();
+
+  const handleNewAvaliacao = (data) => {
+    setAvaliacoes((prev) => [data, ...prev]);
+    addNotification(
+      `✨ Nova avaliação de ${data.nome} - NPS: ${data.nps || 'N/A'}`,
+      'success'
+    );
+  };
+
+  const handleMetaReached = (data) => {
+    addNotification(
+      `🎯 Meta atingida! ${data.count} avaliações recebidas!`,
+      'success',
+      7000
+    );
+  };
+
+  useAvaliacaoListener(handleNewAvaliacao, handleMetaReached, 10);
 
   useEffect(() => {
     const stored = localStorage.getItem("adminData");
@@ -51,6 +73,7 @@ export default function Dashboard() {
 
   const handleDeleteAvaliacao = (id) => {
     setAvaliacoes((prev) => prev.filter((a) => a.id !== id));
+    addNotification('Avaliação deletada com sucesso', 'info');
   };
 
   if (loading) {
@@ -65,6 +88,7 @@ export default function Dashboard() {
 
   return (
     <div className="flex min-h-screen bg-background">
+      <NotificationCenter notifications={notifications} onRemove={removeNotification} />
       <Sidebar />
       <div className="flex-1 flex flex-col">
         {/* Header */}
