@@ -47,6 +47,7 @@ export default function Formulario() {
   const [nome, setNome] = useState("");
   const [dataFesta, setDataFesta] = useState("");
   const [tema, setTema] = useState("");
+  const [textoOutro, setTextoOutro] = useState("");
   const [npsGeral, setNpsGeral] = useState(7);
   const [notas, setNotas] = useState(
     Object.fromEntries(categorias.map((c) => [c.key, 7]))
@@ -79,6 +80,7 @@ export default function Formulario() {
     const newErrors = {};
     if (!nome.trim()) newErrors.nome = "Nome é obrigatório";
     if (nome.length > 100) newErrors.nome = "Máximo 100 caracteres";
+    if (tema === "outro" && !textoOutro.trim()) newErrors.tema = "Especifique o tema";
     if (!aceitaLGPD) newErrors.lgpd = "Você deve aceitar a Política de Privacidade";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -93,7 +95,7 @@ export default function Formulario() {
       nome: nome || "Anônimo",
       telefone,
       data_festa: dataFesta,
-      tema,
+      tema: tema === "outro" ? `Outro: ${textoOutro}` : tema,
       nps_geral: npsGeral,
       notas_json: notas,
       indica: indica ?? false,
@@ -183,13 +185,38 @@ export default function Formulario() {
               <p className="text-xs text-muted-foreground">Opcional - apenas para contato pós-festa</p>
             </div>
 
-            <SelectDropdown
-              label="Tema da festa"
-              icon="🎭"
-              value={tema}
-              onChange={setTema}
-              options={[...temas.map((t) => ({ label: t, value: t })), { label: "Outro (especifique)", value: "outro" }]}
-            />
+            <div className="space-y-1.5">
+              <SelectDropdown
+                label="Tema da festa"
+                icon="🎭"
+                value={tema}
+                onChange={setTema}
+                options={[...temas.map((t) => ({ label: t, value: t })), { label: "Outro (especifique)", value: "outro" }]}
+              />
+              {errors.tema && <p className="text-xs text-red-500">{errors.tema}</p>}
+            </div>
+
+            {tema === "outro" && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="space-y-1.5"
+              >
+                <label className="text-sm font-semibold font-heading text-foreground">
+                  Qual é o tema? *
+                </label>
+                <Input
+                  placeholder="Ex: Aniversário da Juju"
+                  value={textoOutro}
+                  onChange={(e) => setTextoOutro(e.target.value.slice(0, 100))}
+                  maxLength="100"
+                  className="rounded-xl"
+                  autoFocus
+                />
+                <p className="text-xs text-muted-foreground">Digite o tema customizado da festa</p>
+              </motion.div>
+            )}
 
             <SelectDropdown
               label="Idade da criança"
