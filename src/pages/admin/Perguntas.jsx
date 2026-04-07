@@ -66,6 +66,13 @@ export default function AdminPerguntas() {
     }
   };
 
+  const handleToggleObrigatorio = async (id, currentValue) => {
+    await base44.entities.perguntas.update(id, { obrigatorio: !currentValue });
+    setPerguntas((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, obrigatorio: !currentValue } : p))
+    );
+  };
+
   if (loading) {
     return (
       <div className="flex">
@@ -163,7 +170,16 @@ export default function AdminPerguntas() {
                     {TIPOS.find((t) => t.value === p.tipo)?.label}
                   </td>
                   <td className="px-4 py-3 text-center">
-                    {p.obrigatorio ? "✓" : "—"}
+                   <button
+                     onClick={() => handleToggleObrigatorio(p.id, p.obrigatorio)}
+                     className={`inline-flex items-center justify-center w-6 h-6 rounded border-2 transition-colors cursor-pointer ${
+                       p.obrigatorio
+                         ? "bg-primary border-primary text-white"
+                         : "bg-transparent border-gray-300 hover:border-primary"
+                     }`}
+                   >
+                     {p.obrigatorio && "✓"}
+                   </button>
                   </td>
                   <td className="px-4 py-3 text-right">
                     <Button
