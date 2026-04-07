@@ -83,7 +83,7 @@ export default function Dashboard() {
           <span className="text-xs text-muted-foreground hidden sm:block">{adminData?.email}</span>
           <Button variant="ghost" size="sm" onClick={() => {
           localStorage.removeItem("adminData");
-          navigate("/admin");
+          navigate("/admin/login");
         }}>
             <LogOut className="w-4 h-4 mr-1" /> Sair
           </Button>
