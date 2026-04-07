@@ -47,7 +47,7 @@ const AuthenticatedApp = () => {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/formulario" element={<Formulario />} />
+      <Route path="/avaliacao" element={<Formulario />} />
       <Route path="/confirmacao" element={<Confirmacao />} />
       <Route path="/privacidade" element={<Privacidade />} />
       <Route path="/meus-dados" element={<MeusDados />} />
