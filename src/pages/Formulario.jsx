@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Send, Loader2 } from "lucide-react";
@@ -9,6 +9,8 @@ import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import RatingSlider from "../components/RatingSlider";
 import BooleanToggle from "../components/BooleanToggle";
+import SelectDropdown from "../components/SelectDropdown";
+import MultiSelect from "../components/MultiSelect";
 
 const categorias = [
   { key: "reserva_contato", label: "Reserva / Contato", icon: "📞" },
@@ -21,6 +23,20 @@ const categorias = [
   { key: "limpeza", label: "Limpeza", icon: "✨" },
   { key: "alimentos", label: "Alimentos", icon: "🥗" },
   { key: "brinquedos", label: "Brinquedos", icon: "🎠" },
+];
+
+const TEMAS_PADRAO = [
+  "Princesa", "Super-heróis", "Fazendinha", "Minecraft", "Unicórnio",
+  "Dinos", "Paw Patrol", "Frozen", "Carros", "Jurassic World",
+  "Meninas Poderosas", "Bob Esponja", "Peppa Pig", "Turma da Mônica", "Futebol"
+];
+
+const MOTIVOS = [
+  { label: "Preço", value: "preco" },
+  { label: "Local", value: "local" },
+  { label: "Amigos recomendaram", value: "amigos" },
+  { label: "Rede social", value: "rede_social" },
+  { label: "Animação", value: "animacao" }
 ];
 
 export default function Formulario() {
@@ -37,15 +53,42 @@ export default function Formulario() {
   const [indica, setIndica] = useState(null);
   const [refaz, setRefaz] = useState(null);
   const [textoMelhorar, setTextoMelhorar] = useState("");
+  const [telefone, setTelefone] = useState("");
+  const [idadeC, setIdadeC] = useState("");
+  const [nConvidados, setNConvidados] = useState("");
+  const [motivoEscolha, setMotivoEscolha] = useState([]);
+  const [precoValor, setPrecoValor] = useState(5);
+  const [proximaFesta, setProximaFesta] = useState("");
+  const [temas, setTemas] = useState([]);
+  const [errors, setErrors] = useState({});
 
   const updateNota = (key, value) => {
     setNotas((prev) => ({ ...prev, [key]: value }));
   };
 
+  useEffect(() => {
+    base44.entities.temas.list().then((data) => {
+      const nomes = data.filter((t) => t.ativo).map((t) => t.nome);
+      setTemas(nomes.length ? nomes : TEMAS_PADRAO);
+    }).catch(() => setTemas(TEMAS_PADRAO));
+  }, []);
+
+  const validate = () => {
+    const newErrors = {};
+    if (!nome.trim()) newErrors.nome = "Nome é obrigatório";
+    if (!telefone.trim()) newErrors.telefone = "Telefone é obrigatório";
+    if (nome.length > 100) newErrors.nome = "Máximo 100 caracteres";
+    if (telefone.length > 15) newErrors.telefone = "Máximo 15 caracteres";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async () => {
+    if (!validate()) return;
     setSending(true);
     await base44.entities.avaliacoes.create({
       nome: nome || "Anônimo",
+      telefone,
       data_festa: dataFesta,
       tema,
       nps_geral: npsGeral,
@@ -53,6 +96,11 @@ export default function Formulario() {
       indica: indica ?? false,
       refaz: refaz ?? false,
       texto_melhorar: textoMelhorar,
+      idade_crianca: idadeC,
+      numero_convidados: nConvidados,
+      motivo_escolha: motivoEscolha,
+      preco_valor: precoValor,
+      proxima_festa: proximaFesta,
       data_envio: new Date().toISOString(),
     });
     navigate("/confirmacao");
@@ -96,14 +144,31 @@ export default function Formulario() {
 
             <div className="space-y-1.5">
               <label className="text-sm font-semibold font-heading text-foreground">
-                Seu nome (opcional)
+                Seu nome *
               </label>
               <Input
                 placeholder="Ex: Maria Silva"
                 value={nome}
-                onChange={(e) => setNome(e.target.value)}
-                className="rounded-xl"
+                onChange={(e) => setNome(e.target.value.slice(0, 100))}
+                maxLength="100"
+                className={`rounded-xl ${errors.nome ? "border-red-500" : ""}`}
               />
+              {errors.nome && <p className="text-xs text-red-500">{errors.nome}</p>}
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-sm font-semibold font-heading text-foreground">
+                Telefone para contato *
+              </label>
+              <Input
+                type="tel"
+                placeholder="Ex: (11) 9999-9999"
+                value={telefone}
+                onChange={(e) => setTelefone(e.target.value.slice(0, 15))}
+                maxLength="15"
+                className={`rounded-xl ${errors.telefone ? "border-red-500" : ""}`}
+              />
+              {errors.telefone && <p className="text-xs text-red-500">{errors.telefone}</p>}
             </div>
 
             <div className="space-y-1.5">
@@ -118,17 +183,37 @@ export default function Formulario() {
               />
             </div>
 
-            <div className="space-y-1.5">
-              <label className="text-sm font-semibold font-heading text-foreground">
-                Tema da festa
-              </label>
-              <Input
-                placeholder="Ex: Princesas, Super-heróis..."
-                value={tema}
-                onChange={(e) => setTema(e.target.value)}
-                className="rounded-xl"
-              />
-            </div>
+            <SelectDropdown
+              label="Tema da festa"
+              icon="🎭"
+              value={tema}
+              onChange={setTema}
+              options={[...temas.map((t) => ({ label: t, value: t })), { label: "Outro (especifique)", value: "outro" }]}
+            />
+
+            <SelectDropdown
+              label="Idade da criança"
+              icon="👧"
+              value={idadeC}
+              onChange={setIdadeC}
+              options={[
+                { label: "1-3 anos", value: "1-3" },
+                { label: "4-6 anos", value: "4-6" },
+                { label: "7+ anos", value: "7+" }
+              ]}
+            />
+
+            <SelectDropdown
+              label="Número de convidados"
+              icon="👥"
+              value={nConvidados}
+              onChange={setNConvidados}
+              options={[
+                { label: "Menos de 20", value: "<20" },
+                { label: "20 a 50", value: "20-50" },
+                { label: "Mais de 50", value: "50+" }
+              ]}
+            />
           </motion.section>
 
           {/* NPS Geral */}
@@ -216,11 +301,51 @@ export default function Formulario() {
             />
           </motion.section>
 
+          {/* Novos campos */}
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="bg-card rounded-2xl p-5 border border-border/50 shadow-sm space-y-5"
+          >
+            <h2 className="font-heading font-bold text-lg flex items-center gap-2">
+              📍 Informações Adicionais
+            </h2>
+
+            <MultiSelect
+              label="Por que escolheu o Mulekada?"
+              icon="🎯"
+              value={motivoEscolha}
+              onChange={setMotivoEscolha}
+              options={MOTIVOS}
+            />
+
+            <RatingSlider
+              label="Preço x Valor"
+              value={precoValor}
+              onChange={setPrecoValor}
+              icon="💰"
+            />
+
+            <SelectDropdown
+              label="Quando faria a próxima festa?"
+              icon="🎪"
+              value={proximaFesta}
+              onChange={setProximaFesta}
+              options={[
+                { label: "Em 3 meses", value: "3m" },
+                { label: "Em 6 meses", value: "6m" },
+                { label: "Em 12 meses", value: "12m" },
+                { label: "Não sei", value: "nao_sei" }
+              ]}
+            />
+          </motion.section>
+
           {/* Submit */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
+            transition={{ delay: 0.7 }}
           >
             <Button
               onClick={handleSubmit}

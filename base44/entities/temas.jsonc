@@ -1,0 +1,17 @@
+{
+  "name": "temas",
+  "type": "object",
+  "properties": {
+    "nome": {
+      "type": "string",
+      "title": "Nome do Tema"
+    },
+    "ativo": {
+      "type": "boolean",
+      "title": "Ativo?"
+    }
+  },
+  "required": [
+    "nome"
+  ]
+}

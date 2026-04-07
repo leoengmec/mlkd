@@ -6,6 +6,10 @@
       "type": "string",
       "title": "Nome do Cliente"
     },
+    "telefone": {
+      "type": "string",
+      "title": "Telefone"
+    },
     "data_festa": {
       "type": "string",
       "title": "Data da Festa"
@@ -67,6 +71,29 @@
     "texto_melhorar": {
       "type": "string",
       "title": "O que melhorar?"
+    },
+    "idade_crianca": {
+      "type": "string",
+      "title": "Idade da Crian\u00e7a"
+    },
+    "numero_convidados": {
+      "type": "string",
+      "title": "N\u00famero de Convidados"
+    },
+    "motivo_escolha": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Motivo da Escolha"
+    },
+    "preco_valor": {
+      "type": "number",
+      "title": "Pre\u00e7o x Valor (0-10)"
+    },
+    "proxima_festa": {
+      "type": "string",
+      "title": "Pr\u00f3xima Festa"
     },
     "data_envio": {
       "type": "string",
