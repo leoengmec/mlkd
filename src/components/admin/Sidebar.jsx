@@ -7,7 +7,7 @@ const menuItems = [
   { label: "Cadastrar Temas", href: "/admin/temas", icon: BookOpen },
   { label: "Gerenciar Perguntas", href: "/admin/perguntas", icon: Settings },
   { label: "Configurar Escala", href: "/admin/escala", icon: Sliders },
-  { label: "Tamanho Textos", href: "/admin/max-chars", icon: Type },
+  { label: "Tamanho das respostas", href: "/admin/max-chars", icon: Type },
   { label: "Análises Avançadas", href: "/admin/analises", icon: Sparkles },
   { label: "Configurações", href: "/admin/config", icon: Settings },
 ];
