@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Loader2, LayoutDashboard, LogOut, Sparkles } from "lucide-react";
@@ -22,8 +22,15 @@ import { useAvaliacaoListener } from "../../hooks/useAvaliacaoListener";
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const section = searchParams.get("section");
+
+  useEffect(() => {
+    const pathname = location.pathname;
+    const sectionParam = searchParams.get("section");
+    console.log("📊 [DASHBOARD] Route Updated:", { pathname, section: sectionParam });
+  }, [location.pathname, location.search, searchParams]);
   const [avaliacoes, setAvaliacoes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({ dataInicio: "", dataFim: "", tema: "", mes: "" });
@@ -118,14 +125,14 @@ export default function Dashboard() {
         </div>
       </header>
 
-        <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-6 space-y-6">
-        {section === "admins" && <AdminsSection />}
-        {section === "perguntas" && <PerguntasSection />}
-        {section === "gerar-link" && <GerarAvaliacaoSection />}
-        {!section && (
-          <>
-            {/* Filters */}
-            <FiltersBar filters={filters} onChange={setFilters} avaliacoes={avaliacoes} />
+        <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-6 space-y-6 animate-fade-in">
+          {section === "admins" && <AdminsSection />}
+          {section === "perguntas" && <PerguntasSection />}
+          {section === "gerar-link" && <GerarAvaliacaoSection />}
+          {!section && (
+            <>
+              {/* Filters */}
+              <FiltersBar filters={filters} onChange={setFilters} avaliacoes={avaliacoes} />
 
             {/* KPI Cards */}
             <StatsCards avaliacoes={filtered} />
