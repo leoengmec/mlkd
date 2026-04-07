@@ -27,7 +27,7 @@ export default function Home() {
           className="mb-6"
         >
           <motion.img
-            src="https://media.base44.com/images/public/69d5512a4585ccb7cb7b0fd6/6b5ade6f7_image.png"
+            src="https://media.base44.com/images/public/69d5512a4585ccb7cb7b0fd6/8ae34c042_mlkd.jpg"
             alt="Mulekada Buffet"
             animate={{ y: [0, -8, 0] }}
             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
@@ -79,12 +79,30 @@ export default function Home() {
           </Link>
         </motion.div>
 
+        {/* Instagram */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.9 }}
+          className="mt-4"
+        >
+          <a
+            href="https://www.instagram.com/mulekadabuffet/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors font-heading font-semibold text-sm"
+          >
+            <span className="text-lg">📸</span>
+            @mulekadabuffet
+          </a>
+        </motion.div>
+
         {/* Footer icons */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
-          className="flex items-center gap-4 mt-8 text-3xl"
+          className="flex items-center gap-4 mt-6 text-3xl"
         >
           <motion.span animate={{ rotate: [0, 10, -10, 0] }} transition={{ duration: 2, repeat: Infinity }}>
             🎪
