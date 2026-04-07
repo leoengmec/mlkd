@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Lock, Mail, Loader2, AlertCircle } from "lucide-react";
+import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { base44 } from "@/api/base44Client";
@@ -19,10 +20,7 @@ export default function AdminLogin() {
     setLoading(true);
 
     try {
-      const response = await base44.functions.invoke("verifyAdminLogin", {
-        email,
-        senha,
-      });
+      const response = await base44.functions.invoke("rateLimit", {
 
       if (response.data?.success) {
         localStorage.setItem("adminData", JSON.stringify(response.data.admin));

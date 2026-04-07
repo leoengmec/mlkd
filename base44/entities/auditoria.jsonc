@@ -1,0 +1,51 @@
+{
+  "name": "auditoria",
+  "type": "object",
+  "properties": {
+    "admin_id": {
+      "type": "string",
+      "title": "ID Admin"
+    },
+    "admin_email": {
+      "type": "string",
+      "title": "Email Admin"
+    },
+    "acao": {
+      "type": "string",
+      "enum": [
+        "create",
+        "update",
+        "delete",
+        "login",
+        "logout",
+        "export"
+      ],
+      "title": "A\u00e7\u00e3o"
+    },
+    "tabela": {
+      "type": "string",
+      "title": "Tabela"
+    },
+    "record_id": {
+      "type": "string",
+      "title": "ID Registro"
+    },
+    "detalhes": {
+      "type": "string",
+      "title": "Detalhes (JSON)"
+    },
+    "timestamp": {
+      "type": "string",
+      "title": "Timestamp"
+    },
+    "ip": {
+      "type": "string",
+      "title": "IP"
+    }
+  },
+  "required": [
+    "admin_id",
+    "acao",
+    "timestamp"
+  ]
+}

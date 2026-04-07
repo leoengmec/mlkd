@@ -61,6 +61,7 @@ export default function Formulario() {
   const [proximaFesta, setProximaFesta] = useState("");
   const [temas, setTemas] = useState([]);
   const [errors, setErrors] = useState({});
+  const [aceitaLGPD, setAceitaLGPD] = useState(false);
 
   const updateNota = (key, value) => {
     setNotas((prev) => ({ ...prev, [key]: value }));
@@ -76,9 +77,8 @@ export default function Formulario() {
   const validate = () => {
     const newErrors = {};
     if (!nome.trim()) newErrors.nome = "Nome é obrigatório";
-    if (!telefone.trim()) newErrors.telefone = "Telefone é obrigatório";
     if (nome.length > 100) newErrors.nome = "Máximo 100 caracteres";
-    if (telefone.length > 15) newErrors.telefone = "Máximo 15 caracteres";
+    if (!aceitaLGPD) newErrors.lgpd = "Você deve aceitar a Política de Privacidade";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -86,6 +86,7 @@ export default function Formulario() {
   const handleSubmit = async () => {
     if (!validate()) return;
     setSending(true);
+    localStorage.setItem("clientEmail", nome);
     await base44.entities.avaliacoes.create({
       nome: nome || "Anônimo",
       telefone,
@@ -158,7 +159,7 @@ export default function Formulario() {
 
             <div className="space-y-1.5">
               <label className="text-sm font-semibold font-heading text-foreground">
-                Telefone para contato *
+                Telefone para contato
               </label>
               <Input
                 type="tel"
@@ -166,21 +167,9 @@ export default function Formulario() {
                 value={telefone}
                 onChange={(e) => setTelefone(e.target.value.slice(0, 15))}
                 maxLength="15"
-                className={`rounded-xl ${errors.telefone ? "border-red-500" : ""}`}
-              />
-              {errors.telefone && <p className="text-xs text-red-500">{errors.telefone}</p>}
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-sm font-semibold font-heading text-foreground">
-                Data da festa
-              </label>
-              <Input
-                type="date"
-                value={dataFesta}
-                onChange={(e) => setDataFesta(e.target.value)}
                 className="rounded-xl"
               />
+              <p className="text-xs text-muted-foreground">Opcional - apenas para contato pós-festa</p>
             </div>
 
             <SelectDropdown
@@ -341,11 +330,32 @@ export default function Formulario() {
             />
           </motion.section>
 
+          {/* LGPD Consent */}
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+            className="bg-card rounded-2xl p-5 border border-border/50 shadow-sm space-y-3"
+          >
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={aceitaLGPD}
+                onChange={(e) => setAceitaLGPD(e.target.checked)}
+                className="mt-1 w-4 h-4 rounded border-input"
+              />
+              <span className="text-sm text-foreground">
+                Aceito a <Link to="/privacidade" className="text-primary font-semibold hover:underline" target="_blank">Política de Privacidade</Link> e autorizo o processamento dos meus dados conforme a LGPD *
+              </span>
+            </label>
+            {errors.lgpd && <p className="text-xs text-red-500">{errors.lgpd}</p>}
+          </motion.section>
+
           {/* Submit */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
+            transition={{ delay: 0.8 }}
           >
             <Button
               onClick={handleSubmit}
@@ -361,8 +371,8 @@ export default function Formulario() {
               {sending ? "Enviando..." : "Enviar Avaliação 🚀"}
             </Button>
           </motion.div>
-        </div>
-      </div>
-    </div>
-  );
-}
+          </div>
+          </div>
+          </div>
+          );
+          }

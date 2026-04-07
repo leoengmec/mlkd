@@ -8,6 +8,9 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import Home from './pages/Home';
 import Formulario from './pages/Formulario';
 import Confirmacao from './pages/Confirmacao';
+import Privacidade from './pages/Privacidade';
+import MeusDados from './pages/MeusDados';
+import CookieBanner from './components/CookieBanner';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminLogin from './pages/admin/Login';
 import AdminTemas from './pages/admin/Temas';
@@ -46,6 +49,8 @@ const AuthenticatedApp = () => {
       <Route path="/" element={<Home />} />
       <Route path="/formulario" element={<Formulario />} />
       <Route path="/confirmacao" element={<Confirmacao />} />
+      <Route path="/privacidade" element={<Privacidade />} />
+      <Route path="/meus-dados" element={<MeusDados />} />
       <Route path="/admin/login" element={<AdminLogin />} />
       <Route path="/admin" element={<AdminDashboard />} />
       <Route path="/admin/temas" element={<AdminTemas />} />
@@ -67,10 +72,11 @@ function App() {
       <QueryClientProvider client={queryClientInstance}>
         <Router>
           <AuthenticatedApp />
+          <CookieBanner />
         </Router>
         <Toaster />
-      </QueryClientProvider>
-    </AuthProvider>
+        </QueryClientProvider>
+        </AuthProvider>
   )
 }
 

@@ -73,14 +73,25 @@ export default function Home() {
             Leva menos de 2 minutos! 🎉
           </p>
 
-          <Link to="/formulario">
-            <Button
-              size="lg"
-              className="w-full font-heading font-bold text-lg py-6 rounded-xl bg-gradient-to-r from-primary to-violet-500 hover:from-primary/90 hover:to-violet-500/90 shadow-lg shadow-primary/25 transition-all duration-300 hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.02] active:scale-[0.98]"
-            >
-              🌟 Iniciar Avaliação
-            </Button>
-          </Link>
+          <div className="flex gap-2 flex-col sm:flex-row">
+            <Link to="/formulario" className="flex-1">
+              <Button
+                size="lg"
+                className="w-full font-heading font-bold text-lg py-6 rounded-xl bg-gradient-to-r from-primary to-violet-500 hover:from-primary/90 hover:to-violet-500/90 shadow-lg shadow-primary/25 transition-all duration-300 hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.02] active:scale-[0.98]"
+              >
+                🌟 Avaliação
+              </Button>
+            </Link>
+            <Link to="/meus-dados" className="flex-1">
+              <Button
+                size="lg"
+                variant="outline"
+                className="w-full font-heading font-bold text-lg py-6 rounded-xl"
+              >
+                🔐 Meus Dados
+              </Button>
+            </Link>
+          </div>
         </motion.div>
 
         {/* Instagram */}
