@@ -226,7 +226,7 @@ export default function Formulario() {
               onClick={handleSubmit}
               disabled={sending}
               size="lg"
-              className="w-full font-heading font-bold text-lg py-6 rounded-xl bg-gradient-to-r from-primary to-pink-400 hover:from-primary/90 hover:to-pink-400/90 shadow-lg shadow-primary/25 transition-all duration-300 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60"
+              className="w-full font-heading font-bold text-lg py-6 rounded-xl bg-gradient-to-r from-primary to-violet-500 hover:from-primary/90 hover:to-violet-500/90 shadow-lg shadow-primary/25 transition-all duration-300 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60"
             >
               {sending ? (
                 <Loader2 className="w-5 h-5 animate-spin mr-2" />

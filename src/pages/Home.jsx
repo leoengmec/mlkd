@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Star, PartyPopper, Sparkles } from "lucide-react";
+import { Sparkles, Star, PartyPopper } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function Home() {
@@ -19,34 +19,31 @@ export default function Home() {
         transition={{ duration: 0.6 }}
         className="relative z-10 flex flex-col items-center text-center max-w-md w-full"
       >
-        {/* Floating icons */}
+        {/* Logo oficial */}
         <motion.div
-          animate={{ y: [0, -10, 0] }}
-          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-          className="mb-4"
-        >
-          <div className="text-6xl">🎈</div>
-        </motion.div>
-
-        {/* Logo */}
-        <motion.h1
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.5, type: "spring" }}
-          className="font-heading text-5xl sm:text-6xl font-extrabold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent"
+          className="mb-6"
         >
-          Mulekada
-        </motion.h1>
+          <motion.img
+            src="https://media.base44.com/images/public/69d5512a4585ccb7cb7b0fd6/6b5ade6f7_image.png"
+            alt="Mulekada Buffet"
+            animate={{ y: [0, -8, 0] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            className="w-36 h-36 sm:w-44 sm:h-44 object-contain drop-shadow-2xl"
+          />
+        </motion.div>
 
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="flex items-center gap-2 mt-1 mb-6"
+          className="flex items-center gap-2 mb-6"
         >
           <Sparkles className="w-4 h-4 text-accent" />
-          <span className="font-heading text-lg text-muted-foreground font-semibold tracking-wide">
-            BUFFET INFANTIL
+          <span className="font-heading text-base text-muted-foreground font-semibold tracking-wide uppercase">
+            Buffet Infantil • Desde 2005
           </span>
           <Sparkles className="w-4 h-4 text-accent" />
         </motion.div>
@@ -75,7 +72,7 @@ export default function Home() {
           <Link to="/formulario">
             <Button
               size="lg"
-              className="w-full font-heading font-bold text-lg py-6 rounded-xl bg-gradient-to-r from-primary to-pink-400 hover:from-primary/90 hover:to-pink-400/90 shadow-lg shadow-primary/25 transition-all duration-300 hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.02] active:scale-[0.98]"
+              className="w-full font-heading font-bold text-lg py-6 rounded-xl bg-gradient-to-r from-primary to-violet-500 hover:from-primary/90 hover:to-violet-500/90 shadow-lg shadow-primary/25 transition-all duration-300 hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.02] active:scale-[0.98]"
             >
               🌟 Iniciar Avaliação
             </Button>
