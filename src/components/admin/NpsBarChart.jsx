@@ -14,23 +14,10 @@ export default function NpsBarChart({ avaliacoes }) {
     { key: "brinquedos", label: "Brinquedos" },
   ];
 
-  const colors = [
-    'hsl(var(--chart-1))',
-    'hsl(var(--chart-2))',
-    'hsl(var(--chart-3))',
-    'hsl(var(--chart-4))',
-    'hsl(var(--chart-5))',
-    'hsl(var(--primary))',
-    'hsl(var(--secondary))',
-    'hsl(var(--accent))',
-    'hsl(272 68% 60%)',
-    'hsl(130 60% 60%)',
-  ];
-
-  const data = categorias.map((cat, idx) => {
+  const data = categorias.map((cat) => {
     const notas = avaliacoes.map((a) => a.notas_json?.[cat.key] || 0);
     const media = notas.length > 0 ? (notas.reduce((a, b) => a + b, 0) / notas.length).toFixed(1) : 0;
-    return { name: cat.label, media: parseFloat(media), fill: colors[idx % colors.length] };
+    return { name: cat.label, media: parseFloat(media) };
   });
 
   return (
@@ -45,7 +32,7 @@ export default function NpsBarChart({ avaliacoes }) {
             <XAxis dataKey="name" angle={-45} textAnchor="end" height={100} tick={{ fontSize: 12 }} />
             <YAxis domain={[0, 10]} tick={{ fontSize: 12 }} />
             <Tooltip contentStyle={{ fontSize: 12 }} />
-            <Bar dataKey="media" dataKey="fill" radius={[8, 8, 0, 0]} />
+            <Bar dataKey="media" fill="hsl(var(--primary))" radius={[8, 8, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       )}
