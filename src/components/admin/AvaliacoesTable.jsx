@@ -1,63 +1,116 @@
 import { useState } from "react";
-import { ChevronUp, ChevronDown } from "lucide-react";
+import { base44 } from "@/api/base44Client";
+import { Trash2, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
-const getNpsColor = (v) => {
-  if (v >= 9) return "text-green-600 bg-green-100";
-  if (v >= 7) return "text-amber-600 bg-amber-100";
-  return "text-red-600 bg-red-100";
-};
+export default function AvaliacoesTable({ avaliacoes, onDelete }) {
+  const [deleteId, setDeleteId] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
-export default function AvaliacoesTable({ avaliacoes }) {
-  const [sort, setSort] = useState({ key: "data_envio", dir: "desc" });
+  const handleDelete = async () => {
+    if (!deleteId) return;
+    setDeleting(true);
 
-  const sorted = [...avaliacoes]
-    .sort((a, b) => {
-      const va = a[sort.key] ?? "";
-      const vb = b[sort.key] ?? "";
-      return sort.dir === "asc" ? (va > vb ? 1 : -1) : (va < vb ? 1 : -1);
-    })
-    .slice(0, 20);
+    try {
+      await base44.functions.invoke("deleteAvaliacaoWithLog", {
+        avaliacaoId: deleteId,
+      });
+      setDeleteId(null);
+      if (onDelete) onDelete(deleteId);
+    } catch (error) {
+      console.error("Erro ao deletar:", error);
+    } finally {
+      setDeleting(false);
+    }
+  };
 
-  const toggle = (key) => setSort((s) => ({ key, dir: s.key === key && s.dir === "asc" ? "desc" : "asc" }));
-
-  const SortIcon = ({ k }) => sort.key === k
-    ? sort.dir === "asc" ? <ChevronUp className="w-3 h-3 inline" /> : <ChevronDown className="w-3 h-3 inline" />
-    : null;
+  if (!avaliacoes.length) {
+    return (
+      <div className="bg-card rounded-2xl p-8 border border-border/50 text-center">
+        <p className="text-muted-foreground">Nenhuma avaliação encontrada</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="bg-card rounded-2xl p-5 border border-border/50 shadow-sm overflow-x-auto">
-      <h3 className="font-heading font-bold text-foreground mb-4">Últimas 20 Avaliações</h3>
-      <table className="w-full text-sm min-w-[560px]">
-        <thead>
-          <tr className="text-left text-muted-foreground border-b border-border">
-            {[["nome", "Nome"], ["data_festa", "Data Festa"], ["tema", "Tema"], ["nps_geral", "NPS"], ["data_envio", "Enviado"]].map(([k, label]) => (
-              <th key={k} className="pb-2 pr-4 cursor-pointer hover:text-foreground font-heading font-semibold" onClick={() => toggle(k)}>
-                {label} <SortIcon k={k} />
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {sorted.map((a, i) => (
-            <tr key={a.id} className={`border-b border-border/40 ${i % 2 === 0 ? "bg-muted/20" : ""}`}>
-              <td className="py-2 pr-4 font-body">{a.nome || "—"}</td>
-              <td className="py-2 pr-4 text-muted-foreground">{a.data_festa || "—"}</td>
-              <td className="py-2 pr-4 text-muted-foreground">{a.tema || "—"}</td>
-              <td className="py-2 pr-4">
-                <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${getNpsColor(a.nps_geral)}`}>
-                  {a.nps_geral}
-                </span>
-              </td>
-              <td className="py-2 text-muted-foreground text-xs">
-                {a.data_envio ? new Date(a.data_envio).toLocaleDateString("pt-BR") : "—"}
-              </td>
-            </tr>
-          ))}
-          {sorted.length === 0 && (
-            <tr><td colSpan={5} className="text-center py-8 text-muted-foreground">Nenhuma avaliação encontrada</td></tr>
-          )}
-        </tbody>
-      </table>
-    </div>
+    <>
+      <div className="bg-card rounded-2xl border border-border/50 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-muted/50 border-b border-border">
+                <th className="px-4 py-3 text-left font-semibold">Nome</th>
+                <th className="px-4 py-3 text-left font-semibold">Tel</th>
+                <th className="px-4 py-3 text-left font-semibold">Data</th>
+                <th className="px-4 py-3 text-left font-semibold">Tema</th>
+                <th className="px-4 py-3 text-center font-semibold">NPS</th>
+                <th className="px-4 py-3 text-center font-semibold">Próxima</th>
+                <th className="px-4 py-3 text-center font-semibold">Ação</th>
+              </tr>
+            </thead>
+            <tbody>
+              {avaliacoes.map((a) => (
+                <tr key={a.id} className="border-b border-border hover:bg-muted/30 transition">
+                  <td className="px-4 py-3">{a.nome}</td>
+                  <td className="px-4 py-3">{a.telefone || "—"}</td>
+                  <td className="px-4 py-3 text-xs text-muted-foreground">
+                    {a.data_festa ? new Date(a.data_festa).toLocaleDateString("pt-BR") : "—"}
+                  </td>
+                  <td className="px-4 py-3">{a.tema || "—"}</td>
+                  <td className="px-4 py-3 text-center font-bold text-primary">{a.nps_geral}</td>
+                  <td className="px-4 py-3 text-center text-xs">
+                    {a.proxima_festa === "3m" && "3m"}
+                    {a.proxima_festa === "6m" && "6m"}
+                    {a.proxima_festa === "12m" && "12m"}
+                    {a.proxima_festa === "nao_sei" && "?"}
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setDeleteId(a.id)}
+                      className="text-destructive hover:bg-destructive/10"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Deletar Avaliação?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação não pode ser desfeita. Um log de auditoria será registrado.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="flex gap-3 justify-end">
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={deleting}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              {deleting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+              {deleting ? "Deletando..." : "Deletar"}
+            </AlertDialogAction>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

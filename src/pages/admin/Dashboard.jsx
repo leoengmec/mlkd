@@ -13,6 +13,7 @@ import WordCloud from "../../components/admin/WordCloud";
 import FiltersBar from "../../components/admin/FiltersBar";
 import ExportButtons from "../../components/admin/ExportButtons";
 import IaAnalysis from "../../components/admin/IaAnalysis";
+import CorrelationsTable from "../../components/admin/CorrelationsTable";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -39,8 +40,14 @@ export default function Dashboard() {
     if (filters.dataInicio && a.data_festa && a.data_festa < filters.dataInicio) return false;
     if (filters.dataFim && a.data_festa && a.data_festa > filters.dataFim) return false;
     if (filters.mes && a.data_festa && !a.data_festa.startsWith(filters.mes)) return false;
+    if (filters.convidados && a.numero_convidados !== filters.convidados) return false;
+    if (filters.proxima && a.proxima_festa !== filters.proxima) return false;
     return true;
   });
+
+  const handleDeleteAvaliacao = (id) => {
+    setAvaliacoes((prev) => prev.filter((a) => a.id !== id));
+  };
 
   if (loading) {
     return (
@@ -108,7 +115,8 @@ export default function Dashboard() {
               <NpsBarChart avaliacoes={filtered} />
               <PromotersChart avaliacoes={filtered} />
             </div>
-            <AvaliacoesTable avaliacoes={filtered} />
+            <CorrelationsTable avaliacoes={filtered} />
+            <AvaliacoesTable avaliacoes={filtered} onDelete={handleDeleteAvaliacao} />
           </TabsContent>
 
           <TabsContent value="qualitativo" className="space-y-6">

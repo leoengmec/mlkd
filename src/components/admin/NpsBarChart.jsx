@@ -1,61 +1,41 @@
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Legend
-} from "recharts";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-
-const CATEGORIAS = [
-  { key: "reserva_contato", label: "Reserva" },
-  { key: "monitores", label: "Monitores" },
-  { key: "garconetes", label: "Garçonetes" },
-  { key: "supervisora", label: "Supervisora" },
-  { key: "recepcao", label: "Recepção" },
-  { key: "buffet", label: "Buffet" },
-  { key: "climatizacao", label: "Clima" },
-  { key: "limpeza", label: "Limpeza" },
-  { key: "alimentos", label: "Alimentos" },
-  { key: "brinquedos", label: "Brinquedos" },
-];
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 export default function NpsBarChart({ avaliacoes }) {
-  const [tipo, setTipo] = useState("bar");
+  const categorias = [
+    { key: "reserva_contato", label: "Reserva/Contato" },
+    { key: "monitores", label: "Monitores" },
+    { key: "garconetes", label: "Garçonetes" },
+    { key: "supervisora", label: "Supervisora" },
+    { key: "recepcao", label: "Recepção" },
+    { key: "buffet", label: "Buffet" },
+    { key: "climatizacao", label: "Climatização" },
+    { key: "limpeza", label: "Limpeza" },
+    { key: "alimentos", label: "Alimentos" },
+    { key: "brinquedos", label: "Brinquedos" },
+  ];
 
-  const data = CATEGORIAS.map((cat) => {
-    const vals = avaliacoes
-      .map((a) => a.notas_json?.[cat.key])
-      .filter((v) => v !== undefined && v !== null);
-    const media = vals.length > 0 ? (vals.reduce((s, v) => s + v, 0) / vals.length).toFixed(1) : 0;
-    return { name: cat.label, média: parseFloat(media) };
+  const data = categorias.map((cat) => {
+    const notas = avaliacoes.map((a) => a.notas_json?.[cat.key] || 0);
+    const media = notas.length > 0 ? (notas.reduce((a, b) => a + b, 0) / notas.length).toFixed(1) : 0;
+    return { name: cat.label, media: parseFloat(media) };
   });
 
   return (
-    <div className="bg-card rounded-2xl p-5 border border-border/50 shadow-sm">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-heading font-bold text-foreground">Médias por Categoria</h3>
-        <div className="flex gap-2">
-          <Button size="sm" variant={tipo === "bar" ? "default" : "outline"} onClick={() => setTipo("bar")}>Barras</Button>
-          <Button size="sm" variant={tipo === "line" ? "default" : "outline"} onClick={() => setTipo("line")}>Linha</Button>
-        </div>
-      </div>
-      <ResponsiveContainer width="100%" height={260}>
-        {tipo === "bar" ? (
-          <BarChart data={data} margin={{ top: 5, right: 10, left: -20, bottom: 30 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-            <XAxis dataKey="name" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} angle={-35} textAnchor="end" />
-            <YAxis domain={[0, 10]} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
-            <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid hsl(var(--border))", background: "hsl(var(--card))" }} />
-            <Bar dataKey="média" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
+    <div className="bg-card rounded-2xl p-5 border border-border/50">
+      <h3 className="font-heading font-bold text-lg mb-4">Média por Categoria</h3>
+      {avaliacoes.length === 0 ? (
+        <p className="text-muted-foreground text-center py-8">Nenhuma avaliação</p>
+      ) : (
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" angle={-45} textAnchor="end" height={80} />
+            <YAxis domain={[0, 10]} />
+            <Tooltip />
+            <Bar dataKey="media" fill="hsl(var(--primary))" />
           </BarChart>
-        ) : (
-          <LineChart data={data} margin={{ top: 5, right: 10, left: -20, bottom: 30 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-            <XAxis dataKey="name" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} angle={-35} textAnchor="end" />
-            <YAxis domain={[0, 10]} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
-            <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid hsl(var(--border))", background: "hsl(var(--card))" }} />
-            <Line type="monotone" dataKey="média" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 4 }} />
-          </LineChart>
-        )}
-      </ResponsiveContainer>
+        </ResponsiveContainer>
+      )}
     </div>
   );
 }

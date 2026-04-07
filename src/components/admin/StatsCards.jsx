@@ -1,41 +1,58 @@
-import { motion } from "framer-motion";
-import { TrendingUp, Users, ThumbsUp, ThumbsDown } from "lucide-react";
+import { TrendingUp, Users, Star, ThumbsUp } from "lucide-react";
 
 export default function StatsCards({ avaliacoes }) {
   const total = avaliacoes.length;
-  const npsMedia = total > 0
-    ? (avaliacoes.reduce((s, a) => s + (a.nps_geral || 0), 0) / total).toFixed(1)
-    : "—";
-
+  const npsMedia = total > 0 ? (avaliacoes.reduce((sum, a) => sum + a.nps_geral, 0) / total).toFixed(1) : 0;
   const promotores = avaliacoes.filter((a) => a.nps_geral >= 9).length;
-  const detratores = avaliacoes.filter((a) => a.nps_geral <= 6).length;
-  const passivos = avaliacoes.filter((a) => a.nps_geral >= 7 && a.nps_geral <= 8).length;
-  const npsScore = total > 0 ? Math.round(((promotores - detratores) / total) * 100) : 0;
+  const percentualPromotor = total > 0 ? ((promotores / total) * 100).toFixed(0) : 0;
+  const indica = avaliacoes.filter((a) => a.indica).length;
 
   const cards = [
-    { label: "Avaliações", value: total, icon: Users, color: "text-primary", bg: "bg-primary/10" },
-    { label: "NPS Médio", value: npsMedia, icon: TrendingUp, color: "text-secondary", bg: "bg-secondary/10" },
-    { label: "Promotores", value: `${total > 0 ? Math.round((promotores / total) * 100) : 0}%`, icon: ThumbsUp, color: "text-green-500", bg: "bg-green-500/10" },
-    { label: "NPS Score", value: `${npsScore}`, icon: ThumbsDown, color: "text-accent-foreground", bg: "bg-accent/20" },
+    {
+      label: "Total Respostas",
+      value: total,
+      icon: Users,
+      color: "from-blue-500 to-blue-600",
+    },
+    {
+      label: "NPS Médio",
+      value: npsMedia,
+      icon: Star,
+      color: "from-yellow-500 to-yellow-600",
+    },
+    {
+      label: "Promotores %",
+      value: `${percentualPromotor}%`,
+      icon: TrendingUp,
+      color: "from-green-500 to-green-600",
+    },
+    {
+      label: "Indica Amigos",
+      value: indica,
+      icon: ThumbsUp,
+      color: "from-purple-500 to-purple-600",
+    },
   ];
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-      {cards.map((c, i) => (
-        <motion.div
-          key={c.label}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: i * 0.1 }}
-          className="bg-card rounded-2xl p-5 border border-border/50 shadow-sm"
-        >
-          <div className={`w-10 h-10 rounded-xl ${c.bg} flex items-center justify-center mb-3`}>
-            <c.icon className={`w-5 h-5 ${c.color}`} />
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {cards.map((card) => {
+        const Icon = card.icon;
+        return (
+          <div
+            key={card.label}
+            className={`bg-gradient-to-br ${card.color} rounded-2xl p-5 text-white shadow-lg`}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold opacity-90">{card.label}</p>
+                <p className="text-3xl font-bold mt-1">{card.value}</p>
+              </div>
+              <Icon className="w-12 h-12 opacity-30" />
+            </div>
           </div>
-          <p className="text-2xl font-extrabold font-heading text-foreground">{c.value}</p>
-          <p className="text-xs text-muted-foreground font-body mt-1">{c.label}</p>
-        </motion.div>
-      ))}
+        );
+      })}
     </div>
   );
 }

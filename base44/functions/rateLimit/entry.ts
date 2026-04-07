@@ -1,7 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
 
 const ipAttempts = new Map();
-const MAX_ATTEMPTS = 5;
+const MAX_ATTEMPTS = 3; // Bloqueio após 3 falhas
 const WINDOW_MS = 5 * 60 * 1000; // 5 minutos
 
 function getClientIP(req) {

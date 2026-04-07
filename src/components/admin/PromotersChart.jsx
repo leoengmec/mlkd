@@ -20,34 +20,33 @@ export default function PromotersChart({ avaliacoes }) {
   return (
     <TooltipProvider>
       <div className="bg-card rounded-2xl p-5 border border-border/50 shadow-sm">
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="font-heading font-bold text-foreground">Promotores / Detratores</h3>
-         <TooltipUI>
-          <TooltipTrigger asChild>
-            <span className="text-sm font-heading font-bold text-primary bg-primary/10 px-3 py-1 rounded-full cursor-help hover:bg-primary/20 transition-colors">
-              NPS {npsScore}
-            </span>
-          </TooltipTrigger>
-          <TooltipContent className="bg-card border border-border text-foreground text-xs max-w-xs">
-            Net Promoter Score: métrica que mede a lealdade dos clientes. Varia de -100 a +100. Acima de 50 é excelente.
-          </TooltipContent>
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="font-heading font-bold text-foreground">Promotores / Detratores</h3>
+          <TooltipUI>
+            <TooltipTrigger asChild>
+              <span className="text-sm font-heading font-bold text-primary bg-primary/10 px-3 py-1 rounded-full cursor-help hover:bg-primary/20 transition-colors">
+                NPS {npsScore}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent className="bg-card border border-border text-foreground text-xs max-w-xs">
+              Net Promoter Score: métrica que mede a lealdade dos clientes. Varia de -100 a +100. Acima de 50 é excelente.
+            </TooltipContent>
           </TooltipUI>
-      </div>
-      {total === 0 ? (
-        <p className="text-muted-foreground text-sm text-center py-10">Sem dados</p>
-      ) : (
-        <>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie data={data} cx="50%" cy="40%" outerRadius={70} dataKey="value" label={({ percent }) => `${(percent * 100).toFixed(0)}%`} labelLine={false}>
-                {data.map((_, i) => <Cell key={i} fill={COLORS[i]} />)}
-              </Pie>
-              <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid hsl(var(--border))", background: "hsl(var(--card))", fontSize: "11px" }} />
-              <Legend wrapperStyle={{ paddingTop: "20px" }} />
-            </PieChart>
-          </ResponsiveContainer>
-          <div className="grid grid-cols-3 gap-3 mt-6">
-            <TooltipProvider>
+        </div>
+        {total === 0 ? (
+          <p className="text-muted-foreground text-sm text-center py-10">Sem dados</p>
+        ) : (
+          <>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie data={data} cx="50%" cy="40%" outerRadius={70} dataKey="value" label={({ percent }) => `${(percent * 100).toFixed(0)}%`} labelLine={false}>
+                  {data.map((_, i) => <Cell key={i} fill={COLORS[i]} />)}
+                </Pie>
+                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid hsl(var(--border))", background: "hsl(var(--card))", fontSize: "11px" }} />
+                <Legend wrapperStyle={{ paddingTop: "20px" }} />
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="grid grid-cols-3 gap-3 mt-6">
               {data.map((d, i) => {
                 const descriptions = [
                   "Clientes muito satisfeitos (nota 9-10) que indicariam a empresa",
@@ -68,10 +67,9 @@ export default function PromotersChart({ avaliacoes }) {
                   </TooltipUI>
                 );
               })}
-            </TooltipProvider>
-          </div>
-        </>
-      )}
+            </div>
+          </>
+        )}
       </div>
     </TooltipProvider>
   );
