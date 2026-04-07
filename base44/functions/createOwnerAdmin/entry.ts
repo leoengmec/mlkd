@@ -12,13 +12,13 @@ Deno.serve(async (req) => {
       return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
     }
 
-    const senhaHash = await hashPassword("senha123");
+    const senhaHash = await hashPassword("Ame@4138");
 
     // Criar admin owner
     const admin = await base44.asServiceRole.entities.admins.create({
       email: "leoengmec@yahoo.com.br",
       senha_hash: senhaHash,
-      nome: "Leonardo Alves",
+      nome: "Leonardo Alves (Owner)",
       ativo: true
     });
 
