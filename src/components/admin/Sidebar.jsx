@@ -1,22 +1,25 @@
-import { Link, useLocation } from "react-router-dom";
-import { LayoutGrid, Settings, BookOpen, Sliders, Type, Sparkles, Shield, Users, ToggleRight, Clock } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { LayoutGrid, Settings, BookOpen, Sliders, Type, Sparkles, Shield, Users, ToggleRight, Clock, Link as LinkIcon, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 const menuItems = [
   { label: "Dashboard", href: "/admin", icon: LayoutGrid },
-  { label: "Gerenciar Admins", href: "/admin/admins", icon: Shield },
+  { label: "Gerenciar Admins", href: "/admin?section=admins", icon: Shield },
   { label: "Cadastrar Temas", href: "/admin/temas", icon: BookOpen },
   { label: "Opções Nº Convidados", href: "/admin/opcoes-convidados", icon: Users },
-  { label: "Gerenciar Perguntas", href: "/admin/perguntas", icon: Settings },
+  { label: "Gerenciar Perguntas", href: "/admin?section=perguntas", icon: Settings },
   { label: "Configurar Escala", href: "/admin/escala", icon: Sliders },
   { label: "Tamanho das respostas", href: "/admin/max-chars", icon: Type },
   { label: "Configs Gerais", href: "/admin/configs", icon: ToggleRight },
   { label: "Audit Log", href: "/admin/audit", icon: Clock },
   { label: "Análises Avançadas", href: "/admin/analises", icon: Sparkles },
+  { label: "Gerar Link/QR", href: "/admin?section=gerar-link", icon: LinkIcon },
 ];
 
 export default function Sidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
 
   return (
     <aside className="w-64 bg-card border-r border-border hidden lg:flex flex-col h-screen sticky top-0">
@@ -57,9 +60,15 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-border text-xs text-muted-foreground">
-        <p className="font-semibold mb-1">v1.0</p>
-        <p>Dashboard Admin Mulekada</p>
+      <div className="p-4 border-t border-border space-y-3">
+        <p className="font-semibold text-xs text-muted-foreground">v1.0</p>
+        <Button variant="ghost" size="sm" className="w-full justify-start text-xs" onClick={() => {
+          localStorage.removeItem("adminData");
+          navigate("/admin/login");
+        }}>
+          <LogOut className="w-4 h-4 mr-2" /> Sair
+        </Button>
+        <p className="text-xs text-muted-foreground">© 2026 Mulekada Buffet</p>
       </div>
     </aside>
   );

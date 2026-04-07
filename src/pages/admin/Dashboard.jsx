@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Loader2, LayoutDashboard, LogOut, Sparkles } from "lucide-react";
@@ -14,9 +14,13 @@ import FiltersBar from "../../components/admin/FiltersBar";
 import ExportButtons from "../../components/admin/ExportButtons";
 import IaAnalysis from "../../components/admin/IaAnalysis";
 import CorrelationsTable from "../../components/admin/CorrelationsTable";
+import { AdminsSection, PerguntasSection, GerarAvaliacaoSection } from "../../components/admin/AdminDashboardSections";
+import Footer from "../../components/Footer";
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const section = searchParams.get("section");
   const [avaliacoes, setAvaliacoes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({ dataInicio: "", dataFim: "", tema: "", mes: "" });
@@ -91,43 +95,51 @@ export default function Dashboard() {
       </header>
 
         <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-6 space-y-6">
-        {/* Filters */}
-        <FiltersBar filters={filters} onChange={setFilters} avaliacoes={avaliacoes} />
+        {section === "admins" && <AdminsSection />}
+        {section === "perguntas" && <PerguntasSection />}
+        {section === "gerar-link" && <GerarAvaliacaoSection />}
+        {!section && (
+          <>
+            {/* Filters */}
+            <FiltersBar filters={filters} onChange={setFilters} avaliacoes={avaliacoes} />
 
-        {/* KPI Cards */}
-        <StatsCards avaliacoes={filtered} />
+            {/* KPI Cards */}
+            <StatsCards avaliacoes={filtered} />
 
-        {/* Export */}
-        <div className="flex justify-end">
-          <ExportButtons avaliacoes={filtered} />
-        </div>
-
-        {/* Tabs */}
-        <Tabs defaultValue="quantitativo">
-          <TabsList className="mb-4">
-            <TabsTrigger value="quantitativo">📊 Quantitativo</TabsTrigger>
-            <TabsTrigger value="qualitativo">💬 Qualitativo</TabsTrigger>
-            <TabsTrigger value="ia"><span className="flex items-center gap-1"><Sparkles className="w-3.5 h-3.5" /> IA & Ações</span></TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="quantitativo" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <NpsBarChart avaliacoes={filtered} />
-              <PromotersChart avaliacoes={filtered} />
+            {/* Export */}
+            <div className="flex justify-end">
+              <ExportButtons avaliacoes={filtered} />
             </div>
-            <CorrelationsTable avaliacoes={filtered} />
-            <AvaliacoesTable avaliacoes={filtered} onDelete={handleDeleteAvaliacao} />
-          </TabsContent>
 
-          <TabsContent value="qualitativo" className="space-y-6">
-            <WordCloud avaliacoes={filtered} />
-          </TabsContent>
+            {/* Tabs */}
+            <Tabs defaultValue="quantitativo">
+              <TabsList className="mb-4">
+                <TabsTrigger value="quantitativo">📊 Quantitativo</TabsTrigger>
+                <TabsTrigger value="qualitativo">💬 Qualitativo</TabsTrigger>
+                <TabsTrigger value="ia"><span className="flex items-center gap-1"><Sparkles className="w-3.5 h-3.5" /> IA & Ações</span></TabsTrigger>
+              </TabsList>
 
-          <TabsContent value="ia" className="space-y-6">
-            <IaAnalysis avaliacoes={filtered} userEmail={adminData?.email} />
-          </TabsContent>
-        </Tabs>
+              <TabsContent value="quantitativo" className="space-y-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <NpsBarChart avaliacoes={filtered} />
+                  <PromotersChart avaliacoes={filtered} />
+                </div>
+                <CorrelationsTable avaliacoes={filtered} />
+                <AvaliacoesTable avaliacoes={filtered} onDelete={handleDeleteAvaliacao} />
+              </TabsContent>
+
+              <TabsContent value="qualitativo" className="space-y-6">
+                <WordCloud avaliacoes={filtered} />
+              </TabsContent>
+
+              <TabsContent value="ia" className="space-y-6">
+                <IaAnalysis avaliacoes={filtered} userEmail={adminData?.email} />
+              </TabsContent>
+            </Tabs>
+          </>
+        )}
         </main>
+        <Footer />
       </div>
     </div>
   );
