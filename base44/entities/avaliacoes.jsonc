@@ -1,0 +1,79 @@
+{
+  "name": "avaliacoes",
+  "type": "object",
+  "properties": {
+    "nome": {
+      "type": "string",
+      "title": "Nome do Cliente"
+    },
+    "data_festa": {
+      "type": "string",
+      "title": "Data da Festa"
+    },
+    "tema": {
+      "type": "string",
+      "title": "Tema da Festa"
+    },
+    "nps_geral": {
+      "type": "number",
+      "title": "NPS Geral",
+      "minimum": 0,
+      "maximum": 10
+    },
+    "notas_json": {
+      "type": "object",
+      "title": "Notas por Categoria",
+      "properties": {
+        "reserva_contato": {
+          "type": "number"
+        },
+        "monitores": {
+          "type": "number"
+        },
+        "garconetes": {
+          "type": "number"
+        },
+        "supervisora": {
+          "type": "number"
+        },
+        "recepcao": {
+          "type": "number"
+        },
+        "buffet": {
+          "type": "number"
+        },
+        "climatizacao": {
+          "type": "number"
+        },
+        "limpeza": {
+          "type": "number"
+        },
+        "alimentos": {
+          "type": "number"
+        },
+        "brinquedos": {
+          "type": "number"
+        }
+      }
+    },
+    "indica": {
+      "type": "boolean",
+      "title": "Indica para amigos?"
+    },
+    "refaz": {
+      "type": "boolean",
+      "title": "Faria outra festa?"
+    },
+    "texto_melhorar": {
+      "type": "string",
+      "title": "O que melhorar?"
+    },
+    "data_envio": {
+      "type": "string",
+      "title": "Data de Envio"
+    }
+  },
+  "required": [
+    "nps_geral"
+  ]
+}
