@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import { base44 } from "@/api/base44Client";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Loader2, LayoutDashboard, LogOut } from "lucide-react";
+import { Loader2, LayoutDashboard, LogOut, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import StatsCards from "../../components/admin/StatsCards";
 import NpsBarChart from "../../components/admin/NpsBarChart";
@@ -12,6 +12,7 @@ import AvaliacoesTable from "../../components/admin/AvaliacoesTable";
 import WordCloud from "../../components/admin/WordCloud";
 import FiltersBar from "../../components/admin/FiltersBar";
 import ExportButtons from "../../components/admin/ExportButtons";
+import IaAnalysis from "../../components/admin/IaAnalysis";
 
 export default function Dashboard() {
   const { user, isLoadingAuth } = useAuth();
@@ -96,6 +97,7 @@ export default function Dashboard() {
           <TabsList className="mb-4">
             <TabsTrigger value="quantitativo">📊 Quantitativo</TabsTrigger>
             <TabsTrigger value="qualitativo">💬 Qualitativo</TabsTrigger>
+            <TabsTrigger value="ia"><span className="flex items-center gap-1"><Sparkles className="w-3.5 h-3.5" /> IA & Ações</span></TabsTrigger>
           </TabsList>
 
           <TabsContent value="quantitativo" className="space-y-6">
@@ -108,6 +110,10 @@ export default function Dashboard() {
 
           <TabsContent value="qualitativo" className="space-y-6">
             <WordCloud avaliacoes={filtered} />
+          </TabsContent>
+
+          <TabsContent value="ia" className="space-y-6">
+            <IaAnalysis avaliacoes={filtered} userEmail={user?.email} />
           </TabsContent>
         </Tabs>
       </main>
