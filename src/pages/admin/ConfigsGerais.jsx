@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft, Mail } from "lucide-react";
 import { Link } from "react-router-dom";
 import Sidebar from "../../components/admin/Sidebar";
 
@@ -41,6 +41,32 @@ export default function ConfigsGerais() {
         });
     }
   }, []);
+
+  const handleTestEmail = async () => {
+    try {
+      const testAvaliacao = {
+        nome: "Teste",
+        telefone: "",
+        data_festa: new Date().toLocaleDateString('pt-BR'),
+        tema: "Teste",
+        nps_geral: 10,
+        notas_json: {},
+        indica: true,
+        refaz: true,
+        texto_melhorar: "Este é um email de teste",
+        idade_crianca: "5",
+        numero_convidados: "20",
+        motivo_escolha: [],
+        preco_valor: 10,
+        proxima_festa: "3m",
+        data_envio: new Date().toISOString()
+      };
+      await base44.functions.invoke('sendAvaliacaoEmail', { avaliacao: testAvaliacao, isTest: true });
+      alert('Email de teste enviado com sucesso!');
+    } catch (error) {
+      alert('Erro ao enviar email de teste: ' + error.message);
+    }
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -182,14 +208,22 @@ export default function ConfigsGerais() {
             </div>
 
             <div className="flex gap-2 justify-end">
-              <Button
-                onClick={handleSave}
-                disabled={saving}
-                className="gap-2"
-              >
-                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                {saving ? "Salvando..." : "Salvar"}
-              </Button>
+             <Button
+               onClick={handleTestEmail}
+               variant="outline"
+               className="gap-2"
+             >
+               <Mail className="w-4 h-4" />
+               Enviar Teste
+             </Button>
+             <Button
+               onClick={handleSave}
+               disabled={saving}
+               className="gap-2"
+             >
+               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+               {saving ? "Salvando..." : "Salvar"}
+             </Button>
             </div>
           </div>
         </main>

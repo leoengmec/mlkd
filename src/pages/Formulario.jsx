@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
+import Footer from "../components/Footer";
 import RatingSlider from "../components/RatingSlider";
 import BooleanToggle from "../components/BooleanToggle";
 import SelectDropdown from "../components/SelectDropdown";
@@ -87,7 +88,8 @@ export default function Formulario() {
     if (!validate()) return;
     setSending(true);
     localStorage.setItem("clientEmail", nome);
-    await base44.entities.avaliacoes.create({
+    
+    const avaliacao = {
       nome: nome || "Anônimo",
       telefone,
       data_festa: dataFesta,
@@ -103,7 +105,16 @@ export default function Formulario() {
       preco_valor: precoValor,
       proxima_festa: proximaFesta,
       data_envio: new Date().toISOString(),
-    });
+    };
+
+    await base44.entities.avaliacoes.create(avaliacao);
+    
+    try {
+      await base44.functions.invoke('sendAvaliacaoEmail', { avaliacao, isTest: false });
+    } catch (e) {
+      console.error('Erro ao enviar email:', e);
+    }
+    
     navigate("/confirmacao");
   };
 
@@ -371,6 +382,7 @@ export default function Formulario() {
               {sending ? "Enviando..." : "Enviar Avaliação 🚀"}
             </Button>
           </motion.div>
+          <Footer />
           </div>
           </div>
           </div>

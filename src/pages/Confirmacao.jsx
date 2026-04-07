@@ -5,6 +5,7 @@ import { CheckCircle, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
 import Confetti from "../components/Confetti";
+import Footer from "../components/Footer";
 
 export default function Confirmacao() {
   const [showConfetti, setShowConfetti] = useState(true);
@@ -77,6 +78,7 @@ export default function Confirmacao() {
           <span>🎊</span>
         </motion.div>
       </motion.div>
+      <Footer />
     </div>
   );
 }

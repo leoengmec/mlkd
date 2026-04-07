@@ -15,12 +15,7 @@ export default function SelectDropdown({ label, value, onChange, options, icon, 
 
   const handleCustomChange = (text) => {
     setCustomText(text);
-    if (text.trim()) {
-      onChange(`outro:${text}`);
-      if (onCustomInput) onCustomInput(text);
-    } else {
-      onChange("outro");
-    }
+    onChange(text.trim() ? text : "");
   };
 
   return (
@@ -47,6 +42,7 @@ export default function SelectDropdown({ label, value, onChange, options, icon, 
           value={customText}
           onChange={(e) => handleCustomChange(e.target.value)}
           className="rounded-xl"
+          autoFocus
         />
       )}
     </div>
