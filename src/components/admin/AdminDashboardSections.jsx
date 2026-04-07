@@ -278,7 +278,7 @@ export function GerarAvaliacaoSection() {
   return (
     <div className="space-y-6">
       <h2 className="font-heading font-bold text-xl">🔗 Gerar Link/QR Avaliação</h2>
-      <div className="bg-card rounded-2xl p-6 border border-border space-y-6">
+      <div className="bg-card rounded-2xl p-4 border border-border space-y-4">
         <div className="space-y-2">
           <label className="text-sm font-semibold">Link de Avaliação</label>
           <div className="flex gap-2">
