@@ -20,7 +20,7 @@ export default function AuditLog() {
       navigate("/admin/login");
     } else {
       setAdminData(JSON.parse(stored));
-      base44.asServiceRole.entities.auditoria
+      base44.entities.auditoria
         .list("-timestamp", 500)
         .then((data) => {
           setLogs(data);

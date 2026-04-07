@@ -40,7 +40,7 @@ export default function OpcoesCconvidados() {
             { nome: "20-50", ativo: true },
             { nome: "50+", ativo: true },
           ];
-          base44.asServiceRole.entities.opcoes_convidados.bulkCreate(padrao).then(() => {
+          base44.entities.opcoes_convidados.bulkCreate(padrao).then(() => {
             setOpcoes(padrao);
             setLoading(false);
           });
@@ -57,7 +57,7 @@ export default function OpcoesCconvidados() {
     setSaving(true);
 
     try {
-      const created = await base44.asServiceRole.entities.opcoes_convidados.create({
+      const created = await base44.entities.opcoes_convidados.create({
         nome: novaOpcao,
         ativo: true,
       });
@@ -73,7 +73,7 @@ export default function OpcoesCconvidados() {
 
   const handleToggle = async (id, ativo) => {
     try {
-      await base44.asServiceRole.entities.opcoes_convidados.update(id, { ativo: !ativo });
+      await base44.entities.opcoes_convidados.update(id, { ativo: !ativo });
       setOpcoes((prev) =>
         prev.map((o) => (o.id === id ? { ...o, ativo: !ativo } : o))
       );
@@ -85,7 +85,7 @@ export default function OpcoesCconvidados() {
   const handleDelete = async () => {
     if (!deleteId) return;
     try {
-      await base44.asServiceRole.entities.opcoes_convidados.delete(deleteId);
+      await base44.entities.opcoes_convidados.delete(deleteId);
       setOpcoes((prev) => prev.filter((o) => o.id !== deleteId));
       setDeleteId(null);
     } catch (error) {

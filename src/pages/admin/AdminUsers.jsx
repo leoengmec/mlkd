@@ -33,7 +33,7 @@ export default function AdminUsers() {
       navigate("/admin/login");
     } else {
       setAdminData(JSON.parse(stored));
-      base44.asServiceRole.entities.admins.list().then((data) => {
+      base44.entities.admins.list().then((data) => {
         setAdmins(data);
         setLoading(false);
       });
@@ -52,12 +52,12 @@ export default function AdminUsers() {
         .join("");
 
       if (editingId) {
-        await base44.asServiceRole.entities.admins.update(editingId, {
+        await base44.entities.admins.update(editingId, {
           email: formData.email,
           senha_hash: senhaHash,
         });
       } else {
-        await base44.asServiceRole.entities.admins.create({
+        await base44.entities.admins.create({
           email: formData.email,
           senha_hash: senhaHash,
           nome: formData.email.split("@")[0],
@@ -65,7 +65,7 @@ export default function AdminUsers() {
         });
       }
 
-      const updated = await base44.asServiceRole.entities.admins.list();
+      const updated = await base44.entities.admins.list();
       setAdmins(updated);
       setShowForm(false);
       setEditingId(null);
@@ -80,7 +80,7 @@ export default function AdminUsers() {
   const handleDelete = async () => {
     if (!deleteId) return;
     try {
-      await base44.asServiceRole.entities.admins.delete(deleteId);
+      await base44.entities.admins.delete(deleteId);
       setAdmins((prev) => prev.filter((a) => a.id !== deleteId));
       setDeleteId(null);
     } catch (error) {

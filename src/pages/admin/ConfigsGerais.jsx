@@ -29,7 +29,7 @@ export default function ConfigsGerais() {
       navigate("/admin/login");
     } else {
       setAdminData(JSON.parse(stored));
-      base44.asServiceRole.entities.configs
+      base44.entities.configs
         .list()
         .then((data) => {
           const configMap = {};
@@ -46,16 +46,16 @@ export default function ConfigsGerais() {
     setSaving(true);
     try {
       for (const [key, value] of Object.entries(configs)) {
-        const existing = await base44.asServiceRole.entities.configs.filter(
+        const existing = await base44.entities.configs.filter(
           { chave: key },
           "",
           1
         );
 
         if (existing.length > 0) {
-          await base44.asServiceRole.entities.configs.update(existing[0].id, { valor: String(value) });
+          await base44.entities.configs.update(existing[0].id, { valor: String(value) });
         } else {
-          await base44.asServiceRole.entities.configs.create({
+          await base44.entities.configs.create({
             chave: key,
             valor: String(value),
             tipo: ["smtp_port", "nps_alerta_threshold"].includes(key) ? "numero" : "texto",
