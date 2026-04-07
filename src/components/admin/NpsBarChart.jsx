@@ -21,18 +21,18 @@ export default function NpsBarChart({ avaliacoes }) {
   });
 
   return (
-    <div className="bg-card rounded-2xl p-5 border border-border/50">
-      <h3 className="font-heading font-bold text-lg mb-4">Média por Categoria</h3>
+    <div className="bg-card rounded-2xl p-6 border border-border/50">
+      <h3 className="font-heading font-bold text-lg mb-6">Média por Categoria</h3>
       {avaliacoes.length === 0 ? (
         <p className="text-muted-foreground text-center py-8">Nenhuma avaliação</p>
       ) : (
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={data}>
+        <ResponsiveContainer width="100%" height={400}>
+          <BarChart data={data} margin={{ top: 10, right: 20, left: -10, bottom: 80 }}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" angle={-45} textAnchor="end" height={80} />
-            <YAxis domain={[0, 10]} />
-            <Tooltip />
-            <Bar dataKey="media" fill="hsl(var(--primary))" />
+            <XAxis dataKey="name" angle={-45} textAnchor="end" height={100} tick={{ fontSize: 12 }} />
+            <YAxis domain={[0, 10]} tick={{ fontSize: 12 }} />
+            <Tooltip contentStyle={{ fontSize: 12 }} />
+            <Bar dataKey="media" fill="hsl(var(--primary))" radius={[8, 8, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       )}
