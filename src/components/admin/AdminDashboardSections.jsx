@@ -288,13 +288,14 @@ export function GerarAvaliacaoSection() {
         </div>
         <div className="space-y-2">
           <label className="text-sm font-semibold">QR Code</label>
-          <img src={qrUrl} alt="QR" className="w-64 h-64 border rounded" />
-        </div>
-        <div className="space-y-2">
-          <label className="text-sm font-semibold">Compartilhar WhatsApp</label>
-          <Button onClick={() => { window.open(`https://wa.me/?text=${encodeURIComponent(whatsappText)}`); }}>
-            💬 Copiar para WhatsApp
-          </Button>
+          <div className="flex gap-6">
+            <img src={qrUrl} alt="QR" className="w-64 h-64 border rounded" />
+            <div className="flex flex-col justify-center">
+              <Button onClick={() => { window.open(`https://wa.me/?text=${encodeURIComponent(whatsappText)}`); }} className="w-full">
+                💬 Compartilhar WhatsApp
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
