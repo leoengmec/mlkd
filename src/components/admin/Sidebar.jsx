@@ -3,17 +3,17 @@ import { LayoutGrid, Settings, BookOpen, Sliders, Type, Sparkles, Shield, Users,
 import { cn } from "@/lib/utils";
 
 const menuItems = [
-  { label: "Dashboard", href: "/admin", icon: LayoutGrid },
-  { label: "Gerenciar Admins", href: "/admin/admins", icon: Shield },
-  { label: "Cadastrar Temas", href: "/admin/temas", icon: BookOpen },
-  { label: "Opções Nº Convidados", href: "/admin/opcoes-convidados", icon: Users },
-  { label: "Gerenciar Perguntas", href: "/admin/perguntas", icon: Settings },
-  { label: "Configurar Escala", href: "/admin/escala", icon: Sliders },
-  { label: "Tamanho das respostas", href: "/admin/max-chars", icon: Type },
-  { label: "Configs Gerais", href: "/admin/configs", icon: ToggleRight },
-  { label: "Audit Log", href: "/admin/audit", icon: Clock },
-  { label: "Análises Avançadas", href: "/admin/analises", icon: Sparkles },
-];
+{ label: "Dashboard", href: "/admin", icon: LayoutGrid },
+{ label: "Gerenciar Admins", href: "/admin/admins", icon: Shield },
+{ label: "Cadastrar Temas", href: "/admin/temas", icon: BookOpen },
+{ label: "Opções Nº Convidados", href: "/admin/opcoes-convidados", icon: Users },
+{ label: "Gerenciar Perguntas", href: "/admin/perguntas", icon: Settings },
+{ label: "Configurar Escala", href: "/admin/escala", icon: Sliders },
+{ label: "Tamanho das respostas", href: "/admin/max-chars", icon: Type },
+{ label: "Configs Gerais", href: "/admin/configs", icon: ToggleRight },
+{ label: "Audit Log", href: "/admin/audit", icon: Clock },
+{ label: "Análises Avançadas", href: "/admin/analises", icon: Sparkles }];
+
 
 export default function Sidebar() {
   const location = useLocation();
@@ -25,8 +25,8 @@ export default function Sidebar() {
         <img
           src="https://media.base44.com/images/public/69d5512a4585ccb7cb7b0fd6/8ae34c042_mlkd.jpg"
           alt="Mulekada"
-          className="w-10 h-10 rounded-full object-contain"
-        />
+          className="w-10 h-10 rounded-full object-contain" />
+        
         <div>
           <p className="font-heading font-bold text-sm text-foreground">Mulekada</p>
           <p className="text-xs text-muted-foreground">Admin</p>
@@ -44,23 +44,23 @@ export default function Sidebar() {
               to={item.href}
               className={cn(
                 "flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-heading font-semibold transition-all",
-                isActive
-                  ? "bg-primary text-primary-foreground shadow-md"
-                  : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-              )}
-            >
+                isActive ?
+                "bg-primary text-primary-foreground shadow-md" :
+                "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+              )}>
+              
               <Icon className="w-4 h-4" />
               {item.label}
-            </Link>
-          );
+            </Link>);
+
         })}
       </nav>
 
       {/* Footer */}
       <div className="p-4 border-t border-border text-xs text-muted-foreground">
-        <p className="font-semibold mb-1">v1.0</p>
+        
         <p>Dashboard Admin Mulekada</p>
       </div>
-    </aside>
-  );
+    </aside>);
+
 }
