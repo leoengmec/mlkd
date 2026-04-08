@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, Plus, Edit2, Trash2, ArrowLeft } from "lucide-react";
+import { Loader2, Plus, Edit2, Trash2, ArrowLeft, ToggleLeft, ToggleRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import Sidebar from "../../components/admin/Sidebar";
 import {
@@ -24,7 +24,7 @@ export default function AdminUsers() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
-  const [formData, setFormData] = useState({ email: "", senha: "" });
+  const [formData, setFormData] = useState({ email: "", nome: "", senha: "", ativo: true });
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -52,16 +52,19 @@ export default function AdminUsers() {
         .join("");
 
       if (editingId) {
-        await base44.entities.admins.update(editingId, {
+        const updatePayload = {
           email: formData.email,
-          senha_hash: senhaHash,
-        });
+          nome: formData.nome,
+          ativo: formData.ativo,
+        };
+        if (formData.senha) updatePayload.senha_hash = senhaHash;
+        await base44.entities.admins.update(editingId, updatePayload);
       } else {
         await base44.entities.admins.create({
           email: formData.email,
           senha_hash: senhaHash,
-          nome: formData.email.split("@")[0],
-          ativo: true,
+          nome: formData.nome || formData.email.split("@")[0],
+          ativo: formData.ativo,
         });
       }
 
@@ -69,7 +72,7 @@ export default function AdminUsers() {
       setAdmins(updated);
       setShowForm(false);
       setEditingId(null);
-      setFormData({ email: "", senha: "" });
+      setFormData({ email: "", nome: "", senha: "", ativo: true });
     } catch (error) {
       console.error("Erro:", error);
     } finally {
@@ -115,7 +118,7 @@ export default function AdminUsers() {
         <main className="max-w-6xl mx-auto px-4 py-6 space-y-6">
           <div className="flex justify-between items-center">
             <p className="text-sm text-muted-foreground">{admins.length} admin(s)</p>
-            <Button onClick={() => setShowForm(!showForm)} className="gap-2">
+            <Button onClick={() => { setEditingId(null); setFormData({ email: "", nome: "", senha: "", ativo: true }); setShowForm(!showForm); }} className="gap-2">
               <Plus className="w-4 h-4" /> Novo Admin
             </Button>
           </div>
@@ -123,18 +126,31 @@ export default function AdminUsers() {
           {showForm && (
             <div className="bg-card rounded-2xl p-6 border border-border/50 space-y-4">
               <h3 className="font-heading font-bold">{editingId ? "Editar Admin" : "Novo Admin"}</h3>
-              <div>
-                <label className="text-sm font-semibold block mb-2">Email</label>
-                <Input
-                  type="email"
-                  placeholder="admin@mulekada.com"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="rounded-lg"
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-semibold block mb-2">Nome</label>
+                  <Input
+                    placeholder="Nome do administrador"
+                    value={formData.nome}
+                    onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+                    className="rounded-lg"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-semibold block mb-2">Email *</label>
+                  <Input
+                    type="email"
+                    placeholder="admin@mulekada.com"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="rounded-lg"
+                  />
+                </div>
               </div>
               <div>
-                <label className="text-sm font-semibold block mb-2">Senha</label>
+                <label className="text-sm font-semibold block mb-2">
+                  Senha {editingId ? "(deixe em branco para manter)" : "*"}
+                </label>
                 <Input
                   type="password"
                   placeholder="••••••••"
@@ -143,8 +159,23 @@ export default function AdminUsers() {
                   className="rounded-lg"
                 />
               </div>
+              <div className="flex items-center gap-3">
+                <label className="text-sm font-semibold">Status:</label>
+                <button
+                  type="button"
+                  onClick={() => setFormData(f => ({ ...f, ativo: !f.ativo }))}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-semibold border transition-colors ${
+                    formData.ativo
+                      ? "bg-green-100 text-green-700 border-green-300"
+                      : "bg-red-100 text-red-700 border-red-300"
+                  }`}
+                >
+                  {formData.ativo ? <ToggleRight className="w-4 h-4" /> : <ToggleLeft className="w-4 h-4" />}
+                  {formData.ativo ? "Ativo" : "Inativo"}
+                </button>
+              </div>
               <div className="flex gap-2">
-                <Button onClick={handleSave} disabled={saving || !formData.email || !formData.senha}>
+                <Button onClick={handleSave} disabled={saving || !formData.email || (!editingId && !formData.senha)}>
                   {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                   {saving ? "Salvando..." : "Salvar"}
                 </Button>
@@ -153,7 +184,7 @@ export default function AdminUsers() {
                   onClick={() => {
                     setShowForm(false);
                     setEditingId(null);
-                    setFormData({ email: "", senha: "" });
+                    setFormData({ email: "", nome: "", senha: "", ativo: true });
                   }}
                 >
                   Cancelar
@@ -166,6 +197,7 @@ export default function AdminUsers() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-muted/50 border-b border-border">
+                  <th className="px-4 py-3 text-left font-semibold">Nome</th>
                   <th className="px-4 py-3 text-left font-semibold">Email</th>
                   <th className="px-4 py-3 text-left font-semibold">Cadastro</th>
                   <th className="px-4 py-3 text-left font-semibold">Último Acesso</th>
@@ -176,7 +208,8 @@ export default function AdminUsers() {
               <tbody>
                 {admins.map((admin) => (
                   <tr key={admin.id} className="border-b border-border hover:bg-muted/30">
-                    <td className="px-4 py-3">{admin.email}</td>
+                     <td className="px-4 py-3 font-medium">{admin.nome || "—"}</td>
+                     <td className="px-4 py-3">{admin.email}</td>
                     <td className="px-4 py-3 text-sm text-muted-foreground">
                       {new Date(admin.created_date).toLocaleDateString("pt-BR")}
                     </td>
@@ -189,9 +222,21 @@ export default function AdminUsers() {
                       </span>
                     </td>
                     <td className="px-4 py-3 text-center flex gap-2 justify-center">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        title={admin.ativo ? "Desativar" : "Ativar"}
+                        onClick={async () => {
+                          await base44.entities.admins.update(admin.id, { ativo: !admin.ativo });
+                          setAdmins(prev => prev.map(a => a.id === admin.id ? { ...a, ativo: !a.ativo } : a));
+                        }}
+                        className={admin.ativo ? "text-green-600" : "text-red-500"}
+                      >
+                        {admin.ativo ? <ToggleRight className="w-4 h-4" /> : <ToggleLeft className="w-4 h-4" />}
+                      </Button>
                       <Button variant="ghost" size="sm" onClick={() => {
                         setEditingId(admin.id);
-                        setFormData({ email: admin.email, senha: "" });
+                        setFormData({ email: admin.email, nome: admin.nome || "", senha: "", ativo: admin.ativo ?? true });
                         setShowForm(true);
                       }}>
                         <Edit2 className="w-4 h-4" />
