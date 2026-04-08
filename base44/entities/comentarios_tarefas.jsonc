@@ -1,0 +1,44 @@
+{
+  "name": "comentarios_tarefas",
+  "type": "object",
+  "properties": {
+    "tarefa_id": {
+      "type": "string",
+      "title": "ID da Tarefa"
+    },
+    "texto": {
+      "type": "string",
+      "title": "Coment\u00e1rio"
+    },
+    "autor_email": {
+      "type": "string",
+      "title": "Autor (email)"
+    }
+  },
+  "required": [
+    "tarefa_id",
+    "texto"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
