@@ -15,6 +15,15 @@
       "type": "string",
       "title": "Nome"
     },
+    "role": {
+      "type": "string",
+      "title": "Role",
+      "enum": [
+        "admin",
+        "viewer"
+      ],
+      "default": "admin"
+    },
     "ativo": {
       "type": "boolean",
       "title": "Ativo?",
@@ -32,6 +41,28 @@
   "indexes": {
     "email": {
       "unique": true
+    }
+  },
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
     }
   }
 }
