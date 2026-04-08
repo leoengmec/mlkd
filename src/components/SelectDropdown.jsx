@@ -27,24 +27,24 @@ export default function SelectDropdown({ label, value, onChange, options, icon, 
       <select
         value={isOtherSelected ? "outro" : value}
         onChange={handleChange}
-        className="w-full px-4 py-2 rounded-xl border border-input bg-background font-body text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-      >
+        className="w-full px-4 py-2 rounded-xl border border-input bg-background font-body text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+        
         <option value="">Selecione uma opção</option>
-        {options.map((opt) => (
-          <option key={opt.value || opt} value={opt.value || opt}>
+        {options.map((opt) =>
+        <option key={opt.value || opt} value={opt.value || opt}>
             {opt.label || opt}
           </option>
-        ))}
+        )}
       </select>
-      {isOtherSelected && (
-        <Input
-          placeholder="Digite aqui..."
-          value={customText}
-          onChange={(e) => handleCustomChange(e.target.value)}
-          className="rounded-xl"
-          autoFocus
-        />
-      )}
-    </div>
-  );
+      
+
+
+
+
+
+
+
+      
+    </div>);
+
 }
