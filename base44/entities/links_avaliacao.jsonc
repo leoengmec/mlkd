@@ -1,0 +1,48 @@
+{
+  "name": "links_avaliacao",
+  "type": "object",
+  "properties": {
+    "admin_email": {
+      "type": "string",
+      "title": "Email do Admin"
+    },
+    "link": {
+      "type": "string",
+      "title": "Link Gerado"
+    },
+    "ref": {
+      "type": "string",
+      "title": "Ref (admin email)"
+    },
+    "qr_url": {
+      "type": "string",
+      "title": "URL do QR Code"
+    }
+  },
+  "required": [
+    "admin_email",
+    "link"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

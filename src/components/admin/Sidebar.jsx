@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   LayoutGrid, Settings, BookOpen, Sliders, Type, Sparkles,
-  Shield, Users, ToggleRight, Clock, FlaskConical, BarChart2, CheckSquare
+  Shield, Users, ToggleRight, Clock, FlaskConical, BarChart2, CheckSquare, QrCode
 } from "lucide-react";
+import GerarLinkModal from "./GerarLinkModal";
 import { cn } from "@/lib/utils";
 import {
   Tooltip, TooltipContent, TooltipProvider, TooltipTrigger
@@ -27,6 +29,8 @@ const menuItems = [
 
 export default function Sidebar() {
   const location = useLocation();
+  const [showGerarLink, setShowGerarLink] = useState(false);
+  const adminEmail = (() => { try { return JSON.parse(localStorage.getItem("adminData") || "{}").email || ""; } catch { return ""; } })();
 
   return (
     <TooltipProvider delayDuration={100}>
@@ -79,6 +83,18 @@ export default function Sidebar() {
             );
           })}
         </nav>
+
+        {/* Gerar Link */}
+        <div className="p-4 border-t border-border">
+          <button
+            onClick={() => setShowGerarLink(true)}
+            className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-heading font-semibold transition-all w-full text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+          >
+            <QrCode className="w-4 h-4 shrink-0" />
+            Gerar Avaliação
+          </button>
+        </div>
+        <GerarLinkModal open={showGerarLink} onClose={() => setShowGerarLink(false)} adminEmail={adminEmail} />
 
         {/* Footer */}
         <div className="p-4 border-t border-border text-xs text-muted-foreground space-y-2">
