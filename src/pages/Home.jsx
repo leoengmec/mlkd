@@ -83,15 +83,6 @@ export default function Home() {
                 🌟 Avaliação
               </Button>
             </Link>
-            <Link to="/meus-dados" className="flex-1">
-              <Button
-                size="lg"
-                variant="outline"
-                className="w-full font-heading font-bold text-lg py-6 rounded-xl"
-              >
-                🔐 Meus Dados
-              </Button>
-            </Link>
           </div>
         </motion.div>
 
