@@ -18,7 +18,8 @@ Deno.serve(async (req) => {
     const destinatario = configMap.email_alertas || 'valeriacavalcantiteixeira@yahoo.com.br';
 
     if (!smtpUser || !smtpPass) {
-      return Response.json({ error: 'SMTP não configurado' }, { status: 400 });
+      console.warn('[sendAvaliacaoEmail] SMTP não configurado — email não enviado (smtp_user/smtp_pass ausentes em configs).');
+      return Response.json({ success: false, skipped: true, message: 'SMTP não configurado, email não enviado' });
     }
 
     // Create transporter
