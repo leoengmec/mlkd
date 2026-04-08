@@ -62,6 +62,7 @@ export default function Formulario() {
   const [precoValor, setPrecoValor] = useState(5);
   const [proximaFesta, setProximaFesta] = useState("");
   const [temas, setTemas] = useState([]);
+  const [opcoesConvidados, setOpcoesConvidados] = useState([]);
   const [errors, setErrors] = useState({});
   const [aceitaLGPD, setAceitaLGPD] = useState(false);
 
@@ -74,6 +75,19 @@ export default function Formulario() {
       const nomes = data.filter((t) => t.ativo).map((t) => t.nome);
       setTemas(nomes.length ? nomes : TEMAS_PADRAO);
     }).catch(() => setTemas(TEMAS_PADRAO));
+
+    base44.entities.opcoes_convidados.list('nome').then((data) => {
+      const ativas = data.filter((o) => o.ativo).map((o) => ({ label: o.nome, value: o.nome }));
+      setOpcoesConvidados(ativas.length ? ativas : [
+        { label: "Menos de 20", value: "<20" },
+        { label: "20 a 50", value: "20-50" },
+        { label: "Mais de 50", value: "50+" }
+      ]);
+    }).catch(() => setOpcoesConvidados([
+      { label: "Menos de 20", value: "<20" },
+      { label: "20 a 50", value: "20-50" },
+      { label: "Mais de 50", value: "50+" }
+    ]));
   }, []);
 
   const validate = () => {
@@ -235,11 +249,7 @@ export default function Formulario() {
               icon="👥"
               value={nConvidados}
               onChange={setNConvidados}
-              options={[
-                { label: "Menos de 20", value: "<20" },
-                { label: "20 a 50", value: "20-50" },
-                { label: "Mais de 50", value: "50+" }
-              ]}
+              options={opcoesConvidados}
             />
           </motion.section>
 
