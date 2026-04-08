@@ -1,9 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
-import { LayoutGrid, Settings, BookOpen, Sliders, Type, Sparkles, Shield, Users, ToggleRight, Clock, FlaskConical } from "lucide-react";
+import { LayoutGrid, Settings, BookOpen, Sliders, Type, Sparkles, Shield, Users, ToggleRight, Clock, FlaskConical, BarChart2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
 { label: "Dashboard", href: "/admin", icon: LayoutGrid },
+{ label: "Dashboard Executivo", href: "/admin/executivo", icon: BarChart2 },
 { label: "Gerenciar Admins", href: "/admin/admins", icon: Shield },
 { label: "Cadastrar Temas", href: "/admin/temas", icon: BookOpen },
 { label: "Opções Nº Convidados", href: "/admin/opcoes-convidados", icon: Users },

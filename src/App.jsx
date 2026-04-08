@@ -25,6 +25,7 @@ import ConfigsGerais from './pages/admin/ConfigsGerais';
 import AuditLog from './pages/admin/AuditLog';
 import OpcoesCconvidados from './pages/admin/OpcoesCconvidados';
 import AdminTestes from './pages/admin/Testes';
+import DashboardExecutivo from './pages/admin/DashboardExecutivo';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -71,6 +72,7 @@ const AuthenticatedApp = () => {
       <Route path="/admin/analises" element={<AdminAnalises />} />
       <Route path="/admin/config" element={<AdminConfig />} />
       <Route path="/admin/testes" element={<AdminTestes />} />
+      <Route path="/admin/executivo" element={<DashboardExecutivo />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
