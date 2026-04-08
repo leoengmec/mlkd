@@ -34,9 +34,13 @@
       "type": "string",
       "title": "Prazo"
     },
+    "nome_responsavel": {
+      "type": "string",
+      "title": "Nome do Respons\u00e1vel"
+    },
     "responsavel": {
       "type": "string",
-      "title": "Respons\u00e1vel (email)"
+      "title": "Email do Respons\u00e1vel"
     },
     "origem": {
       "type": "string",

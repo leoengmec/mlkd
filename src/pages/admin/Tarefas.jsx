@@ -52,7 +52,7 @@ function logAudit(adminData, acao, recordId, detalhes) {
 
 const EMPTY_FORM = {
   titulo: "", descricao: "", status: "pendente", prioridade: "media",
-  prazo: "", responsavel: "", origem: "manual", origem_detalhe: ""
+  prazo: "", nome_responsavel: "", responsavel: "", origem: "manual", origem_detalhe: ""
 };
 
 function TarefaCard({ tarefa, index, onEdit, onDelete, onToggleExpand, expanded, comentarios, loadingComents, novoComentario, setNovoComentario, onAddComentario }) {
@@ -88,7 +88,8 @@ function TarefaCard({ tarefa, index, onEdit, onDelete, onToggleExpand, expanded,
             {/* Meta info */}
             <div className="flex flex-wrap gap-2 text-xs text-muted-foreground mb-2">
               {tarefa.prazo && <span>📅 {new Date(tarefa.prazo + "T12:00:00").toLocaleDateString("pt-BR")}</span>}
-              {tarefa.responsavel && <span>👤 {tarefa.responsavel}</span>}
+              {tarefa.nome_responsavel && <span>👤 {tarefa.nome_responsavel}</span>}
+              {tarefa.responsavel && <span>✉️ {tarefa.responsavel}</span>}
             </div>
 
             {/* Datas automáticas */}
@@ -224,7 +225,8 @@ export default function Tarefas() {
     setForm({
       titulo: tarefa.titulo, descricao: tarefa.descricao || "",
       status: tarefa.status, prioridade: tarefa.prioridade || "media",
-      prazo: tarefa.prazo || "", responsavel: tarefa.responsavel || "",
+      prazo: tarefa.prazo || "", nome_responsavel: tarefa.nome_responsavel || "",
+      responsavel: tarefa.responsavel || "",
       origem: tarefa.origem || "manual", origem_detalhe: tarefa.origem_detalhe || ""
     });
     setShowModal(true);
@@ -410,12 +412,18 @@ export default function Tarefas() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-semibold text-muted-foreground mb-1 block">Prazo</label>
-                <Input type="date" value={form.prazo} onChange={e => setForm(f => ({ ...f, prazo: e.target.value }))} />
+                <label className="text-xs font-semibold text-muted-foreground mb-1 block">Nome do Responsável</label>
+                <Input placeholder="Ex: João Silva" value={form.nome_responsavel} onChange={e => setForm(f => ({ ...f, nome_responsavel: e.target.value }))} />
               </div>
               <div>
-                <label className="text-xs font-semibold text-muted-foreground mb-1 block">Responsável</label>
+                <label className="text-xs font-semibold text-muted-foreground mb-1 block">Email do Responsável</label>
                 <Input placeholder="email@exemplo.com" value={form.responsavel} onChange={e => setForm(f => ({ ...f, responsavel: e.target.value }))} />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground mb-1 block">Prazo</label>
+                <Input type="date" value={form.prazo} onChange={e => setForm(f => ({ ...f, prazo: e.target.value }))} />
               </div>
             </div>
             <div>
