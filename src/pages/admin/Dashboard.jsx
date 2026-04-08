@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Loader2, LayoutDashboard, LogOut, Sparkles } from "lucide-react";
+import { Loader2, LayoutDashboard, LogOut, Sparkles, AlertTriangle, AlertCircle } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Sidebar from "../../components/admin/Sidebar";
 import StatsCards from "../../components/admin/StatsCards";
@@ -136,6 +137,34 @@ export default function Dashboard() {
             <>
               {/* Filters */}
               <FiltersBar filters={filters} onChange={setFilters} avaliacoes={avaliacoes} />
+
+              {/* Banner: BD vazio */}
+              {avaliacoes.length === 0 && (
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-red-50 border border-red-200 rounded-xl px-4 py-4">
+                  <AlertTriangle className="w-5 h-5 text-red-500 shrink-0 mt-0.5 sm:mt-0" />
+                  <div className="flex-1">
+                    <p className="font-heading font-bold text-red-700 text-sm">Continuo sem ter acesso aos dados das pesquisas.</p>
+                    <p className="text-red-600 text-xs mt-0.5">Envie avaliações via /avaliacao para popular stats.</p>
+                  </div>
+                  <Link to="/avaliacao">
+                    <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white shrink-0">Testar Form</Button>
+                  </Link>
+                </div>
+              )}
+
+              {/* Banner: dados existem mas filtro resultou em vazio */}
+              {avaliacoes.length > 0 && filtered.length === 0 && (
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-yellow-50 border border-yellow-200 rounded-xl px-4 py-4">
+                  <AlertCircle className="w-5 h-5 text-yellow-600 shrink-0 mt-0.5 sm:mt-0" />
+                  <div className="flex-1">
+                    <p className="font-heading font-bold text-yellow-700 text-sm">Dados salvos, mas stats não carregam.</p>
+                    <p className="text-yellow-600 text-xs mt-0.5">Verifique logs BD/API ou ajuste os filtros aplicados.</p>
+                  </div>
+                  <Button size="sm" variant="outline" className="border-yellow-400 text-yellow-700 shrink-0" onClick={() => { console.log(`[BD Audit] Total avaliações: ${avaliacoes.length}`, avaliacoes); alert(`BD Audit: ${avaliacoes.length} registro(s) encontrados. Verifique o console para detalhes.`); }}>
+                    Auditar BD
+                  </Button>
+                </div>
+              )}
 
             {/* KPI Cards */}
             <StatsCards avaliacoes={filtered} />
