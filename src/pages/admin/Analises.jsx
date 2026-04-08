@@ -81,29 +81,34 @@ Estatísticas gerais: NPS médio=${avgNps} | Top temas: ${topTemas}
 
 Forneça 5 ações concretas de melhoria com impacto estimado (baixo/médio/alto) e custo aproximado (R$ 0-1000/1000-5000/5000+). Seja específico para buffet infantil.`;
 
-    const response = await base44.integrations.Core.InvokeLLM({
-      prompt,
-      response_json_schema: {
-        type: "object",
-        properties: {
-          acoes: {
-            type: "array",
-            items: {
-              type: "object",
-              properties: {
-                acao: { type: "string" },
-                impacto: { type: "string", enum: ["baixo", "médio", "alto"] },
-                custo: { type: "string", enum: ["R$ 0-1000", "R$ 1000-5000", "R$ 5000+"] },
+    try {
+      const response = await base44.integrations.Core.InvokeLLM({
+        prompt,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            acoes: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  acao: { type: "string" },
+                  impacto: { type: "string", enum: ["baixo", "médio", "alto"] },
+                  custo: { type: "string", enum: ["R$ 0-1000", "R$ 1000-5000", "R$ 5000+"] },
+                },
               },
             },
+            tendencias: { type: "array", items: { type: "string" } },
           },
-          tendencias: { type: "array", items: { type: "string" } },
         },
-      },
-    });
-
-    setResultados(response.data);
-    setAnalisando(false);
+      });
+      console.log("[Análises IA] Resposta recebida:", response);
+      setResultados(response);
+    } catch (e) {
+      console.error("[Análises IA] Erro:", e);
+    } finally {
+      setAnalisando(false);
+    }
   };
 
   if (loading) {
