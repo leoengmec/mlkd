@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, ArrowLeft, Mail } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import Sidebar from "../../components/admin/Sidebar";
 
@@ -13,6 +15,9 @@ export default function ConfigsGerais() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [adminData, setAdminData] = useState(null);
+  const [emailToggle, setEmailToggle] = useState(true);
+  const [emailToggleId, setEmailToggleId] = useState(null);
+  const [savingToggle, setSavingToggle] = useState(false);
   const [configs, setConfigs] = useState({
     texto_confirmacao: "",
     email_alertas: "",
@@ -35,6 +40,10 @@ export default function ConfigsGerais() {
           const configMap = {};
           data.forEach((c) => {
             configMap[c.chave] = c.valor;
+            if (c.chave === "send_survey_confirmation_email") {
+              setEmailToggleId(c.id);
+              setEmailToggle(c.valor === "true" || c.valor === true);
+            }
           });
           setConfigs((prev) => ({ ...prev, ...configMap }));
           setLoading(false);
@@ -65,6 +74,29 @@ export default function ConfigsGerais() {
       alert('Email de teste enviado com sucesso!');
     } catch (error) {
       alert('Erro ao enviar email de teste: ' + error.message);
+    }
+  };
+
+  const handleToggleEmail = async (checked) => {
+    setSavingToggle(true);
+    try {
+      if (emailToggleId) {
+        await base44.entities.configs.update(emailToggleId, { valor: String(checked) });
+      } else {
+        const created = await base44.entities.configs.create({
+          chave: "send_survey_confirmation_email",
+          valor: String(checked),
+          tipo: "boolean",
+          descricao: "Habilita envio automático de emails de confirmação após resposta de pesquisa"
+        });
+        setEmailToggleId(created.id);
+      }
+      setEmailToggle(checked);
+      toast.success(checked ? "Envio de emails habilitado" : "Envio de emails desabilitado");
+    } catch (e) {
+      toast.error("Erro ao salvar: " + e.message);
+    } finally {
+      setSavingToggle(false);
     }
   };
 
@@ -132,6 +164,20 @@ export default function ConfigsGerais() {
                 rows={3}
                 className="rounded-lg"
               />
+            </div>
+
+            <div className="border-t border-border pt-6">
+              <h3 className="font-heading font-bold mb-4">Envio de Emails</h3>
+              <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border border-border">
+                <div>
+                  <p className="font-semibold text-sm">Enviar emails automáticos de avaliação</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Quando desabilitado, nenhum email será enviado após resposta de pesquisa</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  {savingToggle && <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />}
+                  <Switch checked={emailToggle} onCheckedChange={handleToggleEmail} disabled={savingToggle} />
+                </div>
+              </div>
             </div>
 
             <div className="border-t border-border pt-6">
