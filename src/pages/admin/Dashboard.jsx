@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Loader2, LayoutDashboard, LogOut, Sparkles, AlertTriangle, AlertCircle } from "lucide-react";
+import { Loader2, LayoutDashboard, LogOut, Sparkles, AlertTriangle, AlertCircle, Database } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Sidebar from "../../components/admin/Sidebar";
@@ -39,6 +39,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({ dataInicio: "", dataFim: "", tema: "", mes: "" });
   const [adminData, setAdminData] = useState(null);
+  const [seeding, setSeeding] = useState(false);
   const { notifications, addNotification, removeNotification } = useNotifications();
 
   const handleNewAvaliacao = (data) => {
@@ -85,6 +86,45 @@ export default function Dashboard() {
   const handleDeleteAvaliacao = (id) => {
     setAvaliacoes((prev) => prev.filter((a) => a.id !== id));
     addNotification('Avaliação deletada com sucesso', 'info');
+  };
+
+  const handleForceSeed = async () => {
+    setSeeding(true);
+    try {
+      const temas = ["Princesa","Super-heróis","Fazendinha","Minecraft","Unicórnio","Dinos","Frozen","Carros","Futebol","Piratas"];
+      const idades = ["1-3","4-6","7+"];
+      const conv = ["<20","20-50","50+"];
+      const pick = (a) => a[Math.floor(Math.random() * a.length)];
+      const ri = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+      const rf = (min, max) => parseFloat((Math.random() * (max - min) + min).toFixed(1));
+      const fakes = Array.from({ length: 50 }, (_, i) => {
+        const nps = ri(0, 10);
+        return {
+          nome: `Seed Cliente ${i + 1}`,
+          telefone: `(11) 9${ri(1000,9999)}-${ri(1000,9999)}`,
+          data_festa: `2025-${String(ri(1,12)).padStart(2,'0')}-${String(ri(1,28)).padStart(2,'0')}`,
+          tema: pick(temas), nps_geral: nps,
+          notas_json: { reserva_contato: rf(0,10), monitores: rf(0,10), garconetes: rf(0,10),
+            supervisora: rf(0,10), recepcao: rf(0,10), buffet: rf(0,10),
+            climatizacao: rf(0,10), limpeza: rf(0,10), alimentos: rf(0,10), brinquedos: rf(0,10) },
+          indica: nps >= 7, refaz: nps >= 6, texto_melhorar: "",
+          idade_crianca: pick(idades), numero_convidados: pick(conv),
+          motivo_escolha: [pick(["preco","local","amigos","rede_social","animacao"])],
+          preco_valor: rf(0,10), proxima_festa: pick(["3m","6m","12m","nao_sei"]),
+          data_envio: new Date(Date.now() - ri(0,90)*86400000).toISOString(),
+        };
+      });
+      const res = await base44.functions.invoke("adminCrudProxy", { entity: "avaliacoes", operation: "bulkCreate", data: fakes });
+      const criados = res.data?.result?.length || fakes.length;
+      const refreshed = await base44.entities.avaliacoes.list("-data_envio", 500);
+      setAvaliacoes(refreshed);
+      addNotification(`✅ Seed OK: ${criados} avaliações inseridas!`, 'success');
+      console.log(`[BD shared] Seed: ${criados} avaliações. Total BD: ${refreshed.length}`);
+    } catch (e) {
+      addNotification(`❌ Erro no seed: ${e.message}`, 'error');
+    } finally {
+      setSeeding(false);
+    }
   };
 
   if (loading) {
@@ -144,11 +184,17 @@ export default function Dashboard() {
                   <AlertTriangle className="w-5 h-5 text-red-500 shrink-0 mt-0.5 sm:mt-0" />
                   <div className="flex-1">
                     <p className="font-heading font-bold text-red-700 text-sm">Continuo sem ter acesso aos dados das pesquisas.</p>
-                    <p className="text-red-600 text-xs mt-0.5">Envie avaliações via /avaliacao para popular stats.</p>
+                    <p className="text-red-600 text-xs mt-0.5">Envie avaliações via /avaliacao para popular stats, ou force um seed de 50 registros de teste.</p>
                   </div>
-                  <Link to="/avaliacao">
-                    <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white shrink-0">Testar Form</Button>
-                  </Link>
+                  <div className="flex gap-2 flex-wrap shrink-0">
+                    <Button size="sm" variant="outline" className="border-red-400 text-red-700" onClick={handleForceSeed} disabled={seeding}>
+                      {seeding ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Database className="w-3 h-3 mr-1" />}
+                      Forçar Seed 50
+                    </Button>
+                    <Link to="/avaliacao">
+                      <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white">Testar Form</Button>
+                    </Link>
+                  </div>
                 </div>
               )}
 

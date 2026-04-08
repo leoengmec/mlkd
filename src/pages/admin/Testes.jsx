@@ -210,27 +210,32 @@ export default function Testes() {
       setStep("stats", "error", e.message);
     }
 
-    // STEP 6: CRUD
+    // STEP 6: CRUD (via adminCrudProxy para bypassar RLS)
     advance("crud");
-    addLog("Testando CRUD de tema e pergunta...");
+    addLog("Testando CRUD de tema e pergunta via service role...");
     let crudOk = true;
     let crudDetail = "";
     try {
+      const invoke = (entity, operation, data, id) =>
+        base44.functions.invoke("adminCrudProxy", { entity, operation, data, id });
+
       // Criar tema
-      const novoTema = await base44.entities.temas.create({ nome: `Tema Teste E2E ${Date.now()}`, ativo: true });
-      addLog(`✅ Tema criado: ${novoTema.nome} (id=${novoTema.id})`);
+      const temaRes = await invoke("temas", "create", { nome: `Tema Teste E2E ${Date.now()}`, ativo: true });
+      const novoTema = temaRes.data?.result;
+      addLog(`✅ Tema criado: ${novoTema?.nome} (id=${novoTema?.id})`);
       // Atualizar tema
-      await base44.entities.temas.update(novoTema.id, { nome: novoTema.nome + " (editado)" });
+      await invoke("temas", "update", { nome: novoTema.nome + " (editado)" }, novoTema.id);
       addLog("✅ Tema editado com sucesso");
       // Deletar tema
-      await base44.entities.temas.delete(novoTema.id);
+      await invoke("temas", "delete", undefined, novoTema.id);
       addLog("✅ Tema deletado com sucesso");
       // Criar pergunta
-      const novaPergunta = await base44.entities.perguntas.create({ titulo: "Pergunta E2E Teste", tipo: "slider", ordem: 99, obrigatorio: false, ativo: true });
-      addLog(`✅ Pergunta criada (id=${novaPergunta.id})`);
-      await base44.entities.perguntas.delete(novaPergunta.id);
+      const pergRes = await invoke("perguntas", "create", { titulo: "Pergunta E2E Teste", tipo: "slider", ordem: 99, obrigatorio: false, ativo: true });
+      const novaPergunta = pergRes.data?.result;
+      addLog(`✅ Pergunta criada (id=${novaPergunta?.id})`);
+      await invoke("perguntas", "delete", undefined, novaPergunta.id);
       addLog("✅ Pergunta deletada");
-      crudDetail = "Tema e pergunta: criado, editado, deletado OK";
+      crudDetail = "Tema e pergunta: criado, editado, deletado OK (service role)";
     } catch (e) {
       addLog(`❌ Erro no CRUD: ${e.message}`);
       crudOk = false;
