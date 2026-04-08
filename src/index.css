@@ -88,3 +88,77 @@
     @apply bg-background text-foreground font-body;
   }
 }
+
+/* ── Alto Contraste WCAG 2.1 AA (e-MAG) ────────────────────────────────── */
+html.high-contrast {
+  transition: filter 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+}
+
+html.high-contrast body {
+  background-color: #000 !important;
+  color: #fff !important;
+}
+
+html.high-contrast *,
+html.high-contrast h1, html.high-contrast h2, html.high-contrast h3,
+html.high-contrast h4, html.high-contrast h5, html.high-contrast p,
+html.high-contrast span, html.high-contrast label, html.high-contrast li {
+  color: #fff !important;
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+html.high-contrast a {
+  color: #ffff00 !important;
+  text-decoration: underline !important;
+}
+
+html.high-contrast button, html.high-contrast [role="button"] {
+  background-color: #000 !important;
+  color: #fff !important;
+  border: 2px solid #fff !important;
+}
+
+html.high-contrast input, html.high-contrast textarea, html.high-contrast select {
+  background-color: #000 !important;
+  color: #fff !important;
+  border: 2px solid #fff !important;
+}
+
+html.high-contrast .bg-card, html.high-contrast .bg-background,
+html.high-contrast .bg-muted, html.high-contrast [class*="bg-"] {
+  background-color: #111 !important;
+}
+
+html.high-contrast .bg-primary {
+  background-color: #ff0 !important;
+  color: #000 !important;
+}
+
+html.high-contrast .bg-primary * {
+  color: #000 !important;
+}
+
+html.high-contrast .border, html.high-contrast [class*="border"] {
+  border-color: #fff !important;
+}
+
+html.high-contrast table thead tr {
+  background-color: #222 !important;
+}
+
+html.high-contrast table tbody tr:nth-child(even) {
+  background-color: #1a1a1a !important;
+}
+
+html.high-contrast .text-muted-foreground {
+  color: #ccc !important;
+}
+
+html.high-contrast aside {
+  background-color: #000 !important;
+  border-color: #555 !important;
+}
+
+html.high-contrast img {
+  filter: contrast(1.2) brightness(0.9);
+}

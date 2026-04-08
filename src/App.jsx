@@ -11,6 +11,7 @@ import Confirmacao from './pages/Confirmacao';
 import Privacidade from './pages/Privacidade';
 import MeusDados from './pages/MeusDados';
 import CookieBanner from './components/CookieBanner';
+import HighContrastToggle from './components/HighContrastToggle';
 import AdminHome from './pages/admin/Home';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminLogin from './pages/admin/Login';
@@ -89,6 +90,7 @@ function App() {
         <Router>
           <AuthenticatedApp />
           <CookieBanner />
+          <HighContrastToggle />
         </Router>
         <Toaster />
         </QueryClientProvider>

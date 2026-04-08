@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { LayoutGrid, Settings, BookOpen, Sliders, Type, Sparkles, Shield, Users, ToggleRight, Clock, FlaskConical, BarChart2, CheckSquare } from "lucide-react";
+import HighContrastToggle from "../HighContrastToggle";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
@@ -70,8 +71,9 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-border text-xs text-muted-foreground">
-        <p>Desenvolvido por Leonardo Alves</p>
+      <div className="p-4 border-t border-border text-xs text-muted-foreground space-y-2">
+        <HighContrastToggle variant="sidebar" />
+        <p className="px-1">Desenvolvido por Leonardo Alves</p>
       </div>
     </aside>
   );
