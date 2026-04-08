@@ -1,8 +1,11 @@
 import { useState, useEffect, useMemo } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
-import { Loader2, Sparkles, BarChart2, TrendingUp } from "lucide-react";
+import { Loader2, Sparkles, BarChart2, TrendingUp, CheckSquare } from "lucide-react";
 import Sidebar from "../../components/admin/Sidebar";
 import Footer from "../../components/Footer";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
@@ -14,6 +17,9 @@ export default function AdminAnalises() {
   const [analisando, setAnalisando] = useState(false);
   const [resultados, setResultados] = useState(null);
   const [adminData, setAdminData] = useState(null);
+  const [showTaskDialog, setShowTaskDialog] = useState(false);
+  const [selectedAcoes, setSelectedAcoes] = useState([]);
+  const [migrando, setMigrando] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem("adminData");
@@ -104,10 +110,43 @@ Forneça 5 ações concretas de melhoria com impacto estimado (baixo/médio/alto
       });
       console.log("[Análises IA] Resposta recebida:", response);
       setResultados(response);
+      setSelectedAcoes(response.acoes?.map((_, i) => i) || []);
+      setShowTaskDialog(true);
     } catch (e) {
       console.error("[Análises IA] Erro:", e);
     } finally {
       setAnalisando(false);
+    }
+  };
+
+  const toggleAcao = (i) => {
+    setSelectedAcoes(prev =>
+      prev.includes(i) ? prev.filter(x => x !== i) : [...prev, i]
+    );
+  };
+
+  const migrarParaKanban = async () => {
+    if (selectedAcoes.length === 0) { setShowTaskDialog(false); return; }
+    setMigrando(true);
+    const adminEmail = adminData?.email || "";
+    try {
+      const tarefas = selectedAcoes.map(i => ({
+        titulo: resultados.acoes[i].acao,
+        descricao: `Impacto: ${resultados.acoes[i].impacto} | Custo estimado: ${resultados.acoes[i].custo}`,
+        status: "pendente",
+        prioridade: resultados.acoes[i].impacto === "alto" ? "alta" : resultados.acoes[i].impacto === "médio" ? "media" : "baixa",
+        origem: "ia",
+        origem_detalhe: "Gerado via Análises IA",
+        responsavel: adminEmail,
+        nome_responsavel: adminData?.nome || adminEmail,
+      }));
+      await base44.entities.tarefas.bulkCreate(tarefas);
+      toast.success(`${tarefas.length} tarefa(s) adicionada(s) ao Kanban!`);
+      setShowTaskDialog(false);
+    } catch (e) {
+      toast.error("Erro ao criar tarefas: " + e.message);
+    } finally {
+      setMigrando(false);
     }
   };
 
@@ -196,6 +235,47 @@ Forneça 5 ações concretas de melhoria com impacto estimado (baixo/médio/alto
         {avaliacoes.length === 0 && (
           <div className="bg-card rounded-2xl p-8 border border-border/50 text-center text-muted-foreground">Nenhuma avaliação para analisar</div>
         )}
+
+        {/* Dialog: migrar ações para Kanban */}
+        <Dialog open={showTaskDialog} onOpenChange={setShowTaskDialog}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <CheckSquare className="w-5 h-5 text-primary" />
+                Migrar ações para o Kanban
+              </DialogTitle>
+            </DialogHeader>
+            <p className="text-sm text-muted-foreground">Selecione as ações recomendadas que deseja criar como tarefas no quadro Kanban:</p>
+            <div className="space-y-3 mt-2">
+              {resultados?.acoes?.map((acao, i) => (
+                <label key={i} className="flex items-start gap-3 p-3 rounded-lg border border-border bg-muted/20 cursor-pointer hover:bg-muted/40 transition-colors">
+                  <Checkbox
+                    checked={selectedAcoes.includes(i)}
+                    onCheckedChange={() => toggleAcao(i)}
+                    className="mt-0.5"
+                  />
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-foreground">{i+1}. {acao.acao}</p>
+                    <div className="flex gap-2 mt-1">
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
+                        acao.impacto === 'alto' ? 'bg-green-100 text-green-700' :
+                        acao.impacto === 'médio' ? 'bg-yellow-100 text-yellow-700' : 'bg-blue-100 text-blue-700'
+                      }`}>{acao.impacto}</span>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">{acao.custo}</span>
+                    </div>
+                  </div>
+                </label>
+              ))}
+            </div>
+            <DialogFooter className="gap-2 mt-2">
+              <Button variant="outline" onClick={() => setShowTaskDialog(false)}>Pular</Button>
+              <Button onClick={migrarParaKanban} disabled={migrando || selectedAcoes.length === 0} className="gap-2">
+                {migrando ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckSquare className="w-4 h-4" />}
+                Criar {selectedAcoes.length} tarefa(s)
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </main>
       <Footer />
       </div>
