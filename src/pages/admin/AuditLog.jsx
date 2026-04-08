@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, ArrowLeft, Search } from "lucide-react";
+import { Loader2, ArrowLeft, Search, Download } from "lucide-react";
 import { Link } from "react-router-dom";
 import Sidebar from "../../components/admin/Sidebar";
+import Footer from "../../components/Footer";
 
 export default function AuditLog() {
   const navigate = useNavigate();
@@ -29,12 +30,34 @@ export default function AuditLog() {
     }
   }, []);
 
-  const filtered = logs.filter(
-    (log) =>
+  const [filterAcao, setFilterAcao] = useState("");
+  const [filterData, setFilterData] = useState("");
+
+  const filtered = logs.filter((log) => {
+    const matchSearch =
       log.admin_email?.toLowerCase().includes(search.toLowerCase()) ||
       log.acao?.toLowerCase().includes(search.toLowerCase()) ||
-      log.tabela?.toLowerCase().includes(search.toLowerCase())
-  );
+      log.tabela?.toLowerCase().includes(search.toLowerCase()) ||
+      log.detalhes?.toLowerCase().includes(search.toLowerCase());
+    const matchAcao = !filterAcao || log.acao === filterAcao;
+    const matchData = !filterData || log.timestamp?.startsWith(filterData);
+    return matchSearch && matchAcao && matchData;
+  });
+
+  const exportCSV = () => {
+    const headers = ["Data/Hora", "Admin", "Ação", "Tabela", "Registro", "Detalhes"];
+    const rows = filtered.map(l => [
+      new Date(l.timestamp).toLocaleString("pt-BR"),
+      l.admin_email || "", l.acao || "", l.tabela || "", l.record_id || "",
+      (l.detalhes || "").replace(/,/g, ";")
+    ]);
+    const csv = [headers, ...rows].map(r => r.map(c => `"${c}"`).join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `audit_log_${new Date().toISOString().split("T")[0]}.csv`;
+    a.click();
+  };
 
   if (loading) {
     return (
@@ -61,16 +84,27 @@ export default function AuditLog() {
         </header>
 
         <main className="max-w-6xl mx-auto px-4 py-6 space-y-6">
-          <div className="flex gap-3">
-            <div className="flex-1 relative">
+          <div className="flex flex-wrap gap-3">
+            <div className="flex-1 min-w-48 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                placeholder="Buscar por admin, ação, tabela..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-10 rounded-lg"
-              />
+              <Input placeholder="Buscar admin, tabela, detalhes..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10 rounded-lg" />
             </div>
+            <select value={filterAcao} onChange={e => setFilterAcao(e.target.value)} className="border rounded-lg px-3 py-2 text-sm bg-card">
+              <option value="">Todas ações</option>
+              <option value="create">CREATE</option>
+              <option value="update">UPDATE</option>
+              <option value="delete">DELETE</option>
+              <option value="login">LOGIN</option>
+              <option value="logout">LOGOUT</option>
+              <option value="export">EXPORT</option>
+            </select>
+            <Input type="date" value={filterData} onChange={e => setFilterData(e.target.value)} className="w-44 rounded-lg" />
+            <Button variant="outline" size="sm" onClick={exportCSV} className="gap-2">
+              <Download className="w-4 h-4" /> CSV ({filtered.length})
+            </Button>
+            {(search || filterAcao || filterData) && (
+              <Button variant="ghost" size="sm" onClick={() => { setSearch(""); setFilterAcao(""); setFilterData(""); }}>Limpar</Button>
+            )}
           </div>
 
           <p className="text-sm text-muted-foreground">{filtered.length} registros</p>
@@ -117,6 +151,7 @@ export default function AuditLog() {
             </div>
           </div>
         </main>
+        <Footer />
       </div>
     </div>
   );

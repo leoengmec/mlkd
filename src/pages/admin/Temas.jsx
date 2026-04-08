@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, Plus, Edit2, Trash2, Check, X } from "lucide-react";
 import Sidebar from "../../components/admin/Sidebar";
+import Footer from "../../components/Footer";
 
 export default function AdminTemas() {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ export default function AdminTemas() {
   const [loading, setLoading] = useState(true);
   const [novoTema, setNovoTema] = useState("");
   const [editando, setEditando] = useState(null);
+  const [editValue, setEditValue] = useState("");
   const [adminData, setAdminData] = useState(null);
 
   useEffect(() => {
@@ -42,6 +44,15 @@ export default function AdminTemas() {
       await base44.entities.temas.delete(id);
       setTemas(temas.filter((t) => t.id !== id));
     }
+  };
+
+  const handleEdit = (tema) => { setEditando(tema.id); setEditValue(tema.nome); };
+
+  const handleSaveEdit = async (id) => {
+    if (!editValue.trim()) return;
+    await base44.entities.temas.update(id, { nome: editValue });
+    setTemas(temas.map(t => t.id === id ? { ...t, nome: editValue } : t));
+    setEditando(null);
   };
 
   const handleToggleAtivo = async (id, ativo) => {
@@ -105,7 +116,15 @@ export default function AdminTemas() {
             <tbody>
               {temas.map((tema) => (
                 <tr key={tema.id} className="border-b border-border/40 hover:bg-muted/20">
-                  <td className="px-6 py-3 font-body">{tema.nome}</td>
+                  <td className="px-6 py-3 font-body">
+                     {editando === tema.id ? (
+                       <div className="flex gap-2 items-center">
+                         <Input value={editValue} onChange={e => setEditValue(e.target.value)} className="h-8 text-sm" onKeyDown={e => e.key === "Enter" && handleSaveEdit(tema.id)} autoFocus />
+                         <Button size="sm" variant="ghost" onClick={() => handleSaveEdit(tema.id)}><Check className="w-3 h-3 text-green-600" /></Button>
+                         <Button size="sm" variant="ghost" onClick={() => setEditando(null)}><X className="w-3 h-3 text-red-500" /></Button>
+                       </div>
+                     ) : tema.nome}
+                   </td>
                   <td className="px-6 py-3">
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-bold ${
@@ -117,25 +136,14 @@ export default function AdminTemas() {
                       {tema.ativo ? "Ativo" : "Inativo"}
                     </span>
                   </td>
-                  <td className="px-6 py-3 text-right space-x-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleToggleAtivo(tema.id, tema.ativo)}
-                      className="gap-1"
-                    >
-                      {tema.ativo ? (
-                        <X className="w-4 h-4" />
-                      ) : (
-                        <Check className="w-4 h-4" />
-                      )}
+                  <td className="px-6 py-3 text-right space-x-1">
+                    <Button variant="ghost" size="sm" onClick={() => handleEdit(tema)} className="text-blue-600 hover:bg-blue-50">
+                      <Edit2 className="w-4 h-4" />
                     </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDelete(tema.id)}
-                      className="text-red-600 hover:bg-red-100"
-                    >
+                    <Button variant="ghost" size="sm" onClick={() => handleToggleAtivo(tema.id, tema.ativo)} className="gap-1">
+                      {tema.ativo ? <X className="w-4 h-4" /> : <Check className="w-4 h-4" />}
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => handleDelete(tema.id)} className="text-red-600 hover:bg-red-100">
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </td>
@@ -149,6 +157,7 @@ export default function AdminTemas() {
             </div>
           )}
         </div>
+      <Footer />
       </main>
     </div>
   );

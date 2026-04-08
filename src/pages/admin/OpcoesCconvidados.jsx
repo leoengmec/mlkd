@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, Plus, Trash2, ArrowLeft } from "lucide-react";
+import { Loader2, Plus, Trash2, ArrowLeft, Edit2, Check, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import Sidebar from "../../components/admin/Sidebar";
+import Footer from "../../components/Footer";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,6 +26,8 @@ export default function OpcoesCconvidados() {
   const [novaOpcao, setNovaOpcao] = useState("");
   const [saving, setSaving] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
+  const [editingId, setEditingId] = useState(null);
+  const [editValue, setEditValue] = useState("");
 
   useEffect(() => {
     const stored = localStorage.getItem("adminData");
@@ -88,9 +91,18 @@ export default function OpcoesCconvidados() {
       await base44.entities.opcoes_convidados.delete(deleteId);
       setOpcoes((prev) => prev.filter((o) => o.id !== deleteId));
       setDeleteId(null);
-    } catch (error) {
-      console.error("Erro:", error);
-    }
+    } catch (error) { console.error("Erro:", error); }
+  };
+
+  const handleEdit = (opcao) => { setEditingId(opcao.id); setEditValue(opcao.nome); };
+
+  const handleSaveEdit = async (id) => {
+    if (!editValue.trim()) return;
+    try {
+      await base44.entities.opcoes_convidados.update(id, { nome: editValue });
+      setOpcoes(prev => prev.map(o => o.id === id ? { ...o, nome: editValue } : o));
+      setEditingId(null);
+    } catch (e) { console.error(e); }
   };
 
   if (loading) {
@@ -166,7 +178,15 @@ export default function OpcoesCconvidados() {
               <tbody>
                 {opcoes.map((opcao) => (
                   <tr key={opcao.id} className="border-b border-border hover:bg-muted/30">
-                    <td className="px-4 py-3">{opcao.nome}</td>
+                    <td className="px-4 py-3">
+                       {editingId === opcao.id ? (
+                         <div className="flex gap-2 items-center">
+                           <Input value={editValue} onChange={e => setEditValue(e.target.value)} className="h-8 text-sm" onKeyDown={e => e.key === "Enter" && handleSaveEdit(opcao.id)} autoFocus />
+                           <Button size="sm" variant="ghost" onClick={() => handleSaveEdit(opcao.id)}><Check className="w-3 h-3 text-green-600" /></Button>
+                           <Button size="sm" variant="ghost" onClick={() => setEditingId(null)}><X className="w-3 h-3 text-red-500" /></Button>
+                         </div>
+                       ) : opcao.nome}
+                     </td>
                     <td className="px-4 py-3">
                       <button
                         onClick={() => handleToggle(opcao.id, opcao.ativo)}
@@ -179,21 +199,16 @@ export default function OpcoesCconvidados() {
                         {opcao.ativo ? "Ativo" : "Inativo"}
                       </button>
                     </td>
-                    <td className="px-4 py-3 text-center">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setDeleteId(opcao.id)}
-                        className="text-destructive hover:bg-destructive/10"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                    <td className="px-4 py-3 text-center space-x-1">
+                      <Button variant="ghost" size="sm" onClick={() => handleEdit(opcao)}><Edit2 className="w-4 h-4 text-blue-500" /></Button>
+                      <Button variant="ghost" size="sm" onClick={() => setDeleteId(opcao.id)} className="text-destructive hover:bg-destructive/10"><Trash2 className="w-4 h-4" /></Button>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+        <Footer />
         </main>
       </div>
 
