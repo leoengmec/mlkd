@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { LayoutGrid, Settings, BookOpen, Sliders, Type, Sparkles, Shield, Users, ToggleRight, Clock } from "lucide-react";
+import { LayoutGrid, Settings, BookOpen, Sliders, Type, Sparkles, Shield, Users, ToggleRight, Clock, FlaskConical } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
@@ -12,7 +12,8 @@ const menuItems = [
 { label: "Tamanho das respostas", href: "/admin/max-chars", icon: Type },
 { label: "Configs Gerais", href: "/admin/configs", icon: ToggleRight },
 { label: "Audit Log", href: "/admin/audit", icon: Clock },
-{ label: "Análises Avançadas", href: "/admin/analises", icon: Sparkles }];
+{ label: "Análises Avançadas", href: "/admin/analises", icon: Sparkles },
+{ label: "Testes E2E", href: "/admin/testes", icon: FlaskConical }];
 
 
 export default function Sidebar() {
