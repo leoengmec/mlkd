@@ -4,6 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { Loader2, TrendingUp, TrendingDown, Minus, Users, Star, RefreshCw, Calendar } from "lucide-react";
 import Sidebar from "../../components/admin/Sidebar";
 import Footer from "../../components/Footer";
+import HeatMapCalor from "../../components/admin/HeatMapCalor";
 import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend
@@ -283,8 +284,11 @@ export default function DashboardExecutivo() {
             </div>
           </div>
 
-        </main>
-        <Footer />
+          {/* Mapa de Calor */}
+          <HeatMapCalor avaliacoes={avaliacoes} />
+
+          </main>
+          <Footer />
       </div>
     </div>
   );
