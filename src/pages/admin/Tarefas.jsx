@@ -13,28 +13,29 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
   Loader2, Plus, Trash2, Edit2, MessageSquare, ChevronDown, ChevronUp,
-  CheckCircle2, Clock, PlayCircle, AlertTriangle, Sparkles, Zap
+  CheckCircle2, Clock, PlayCircle, AlertTriangle, Sparkles, Filter, X
 } from "lucide-react";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import Sidebar from "../../components/admin/Sidebar";
 import Footer from "../../components/Footer";
 import { toast } from "sonner";
 
 const STATUS_CONFIG = {
-  pendente:     { label: "Pendente",     icon: Clock,         bg: "bg-yellow-100 text-yellow-700 border-yellow-200" },
-  em_andamento: { label: "Em Andamento", icon: PlayCircle,    bg: "bg-blue-100 text-blue-700 border-blue-200" },
-  concluida:    { label: "Concluída",    icon: CheckCircle2,  bg: "bg-green-100 text-green-700 border-green-200" },
+  pendente:     { label: "Pendente",     icon: Clock,         col: "bg-yellow-50 border-yellow-200", header: "bg-yellow-100 text-yellow-800" },
+  em_andamento: { label: "Em Andamento", icon: PlayCircle,    col: "bg-blue-50 border-blue-200",     header: "bg-blue-100 text-blue-800" },
+  concluida:    { label: "Concluída",    icon: CheckCircle2,  col: "bg-green-50 border-green-200",   header: "bg-green-100 text-green-800" },
 };
 
 const PRIORIDADE_CONFIG = {
-  baixa: { label: "Baixa",  bg: "bg-slate-100 text-slate-600" },
-  media: { label: "Média",  bg: "bg-orange-100 text-orange-600" },
-  alta:  { label: "Alta",   bg: "bg-red-100 text-red-600" },
+  baixa: { label: "Baixa",  bg: "bg-slate-100 text-slate-600",    dot: "bg-slate-400" },
+  media: { label: "Média",  bg: "bg-orange-100 text-orange-600",  dot: "bg-orange-400" },
+  alta:  { label: "Alta",   bg: "bg-red-100 text-red-600",        dot: "bg-red-500" },
 };
 
 const ORIGEM_CONFIG = {
-  manual: { label: "Manual",  icon: Edit2 },
-  ia:     { label: "IA",      icon: Sparkles },
-  alerta: { label: "Alerta",  icon: AlertTriangle },
+  manual: { label: "Manual",      icon: Edit2 },
+  ia:     { label: "IA",          icon: Sparkles },
+  alerta: { label: "Alerta",      icon: AlertTriangle },
 };
 
 function logAudit(adminData, acao, recordId, detalhes) {
@@ -49,7 +50,103 @@ function logAudit(adminData, acao, recordId, detalhes) {
   }).catch(() => {});
 }
 
-const EMPTY_FORM = { titulo: "", descricao: "", status: "pendente", prioridade: "media", prazo: "", responsavel: "", origem: "manual", origem_detalhe: "" };
+const EMPTY_FORM = {
+  titulo: "", descricao: "", status: "pendente", prioridade: "media",
+  prazo: "", responsavel: "", origem: "manual", origem_detalhe: ""
+};
+
+function TarefaCard({ tarefa, index, onEdit, onDelete, onToggleExpand, expanded, comentarios, loadingComents, novoComentario, setNovoComentario, onAddComentario }) {
+  const prioCfg = PRIORIDADE_CONFIG[tarefa.prioridade] || PRIORIDADE_CONFIG.media;
+  const origemCfg = ORIGEM_CONFIG[tarefa.origem] || ORIGEM_CONFIG.manual;
+  const OrigemIcon = origemCfg.icon;
+  const vencida = tarefa.prazo && tarefa.status !== "concluida" && new Date(tarefa.prazo) < new Date();
+  const isExpanded = expanded === tarefa.id;
+
+  return (
+    <Draggable draggableId={tarefa.id} index={index}>
+      {(provided, snapshot) => (
+        <div
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+          className={`bg-white rounded-xl border shadow-sm mb-2 transition-all select-none ${snapshot.isDragging ? "shadow-lg rotate-1 opacity-90" : ""} ${vencida ? "border-red-300" : "border-border"}`}
+        >
+          <div className="p-3">
+            {/* Prioridade dot + badges */}
+            <div className="flex flex-wrap items-center gap-1.5 mb-2">
+              <span className={`w-2 h-2 rounded-full ${prioCfg.dot}`} />
+              <span className={`text-xs px-1.5 py-0.5 rounded-full font-semibold ${prioCfg.bg}`}>{prioCfg.label}</span>
+              <span className="text-xs flex items-center gap-0.5 text-muted-foreground">
+                <OrigemIcon className="w-3 h-3" /> {origemCfg.label}
+              </span>
+              {vencida && <span className="text-xs px-1.5 py-0.5 rounded-full bg-red-100 text-red-600 font-semibold flex items-center gap-0.5"><AlertTriangle className="w-3 h-3" /> Vencida</span>}
+            </div>
+
+            <h3 className="font-heading font-bold text-sm text-foreground leading-tight mb-1">{tarefa.titulo}</h3>
+            {tarefa.descricao && <p className="text-xs text-muted-foreground line-clamp-2 mb-2">{tarefa.descricao}</p>}
+
+            {/* Meta info */}
+            <div className="flex flex-wrap gap-2 text-xs text-muted-foreground mb-2">
+              {tarefa.prazo && <span>📅 {new Date(tarefa.prazo + "T12:00:00").toLocaleDateString("pt-BR")}</span>}
+              {tarefa.responsavel && <span>👤 {tarefa.responsavel}</span>}
+            </div>
+
+            {/* Datas automáticas */}
+            <div className="text-xs text-muted-foreground/70 flex gap-3 border-t border-border pt-2 mt-1">
+              <span>Criado: {new Date(tarefa.created_date).toLocaleDateString("pt-BR")}</span>
+              {tarefa.updated_date && tarefa.updated_date !== tarefa.created_date && (
+                <span>Atualizado: {new Date(tarefa.updated_date).toLocaleDateString("pt-BR")}</span>
+              )}
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center justify-end gap-1 mt-2">
+              <Button size="sm" variant="ghost" className="h-6 w-6 p-0" onClick={() => onToggleExpand(tarefa.id)}>
+                <MessageSquare className="w-3 h-3" />
+              </Button>
+              <Button size="sm" variant="ghost" className="h-6 w-6 p-0" onClick={() => onEdit(tarefa)}>
+                <Edit2 className="w-3 h-3" />
+              </Button>
+              <Button size="sm" variant="ghost" className="h-6 w-6 p-0 text-destructive" onClick={() => onDelete(tarefa.id)}>
+                <Trash2 className="w-3 h-3" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Comentários */}
+          {isExpanded && (
+            <div className="border-t border-border px-3 pb-3 pt-2 space-y-2">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Comentários</p>
+              {loadingComents[tarefa.id] && <Loader2 className="w-3 h-3 animate-spin" />}
+              {(comentarios[tarefa.id] || []).length === 0 && !loadingComents[tarefa.id] && (
+                <p className="text-xs text-muted-foreground">Nenhum comentário ainda.</p>
+              )}
+              {(comentarios[tarefa.id] || []).map(c => (
+                <div key={c.id} className="bg-muted/40 rounded px-2 py-1.5">
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <span className="text-xs font-semibold">{c.autor_email || "Admin"}</span>
+                    <span className="text-xs text-muted-foreground">{new Date(c.created_date).toLocaleString("pt-BR")}</span>
+                  </div>
+                  <p className="text-xs">{c.texto}</p>
+                </div>
+              ))}
+              <div className="flex gap-1.5 mt-1">
+                <Input
+                  placeholder="Comentário..."
+                  value={novoComentario[tarefa.id] || ""}
+                  onChange={e => setNovoComentario(prev => ({ ...prev, [tarefa.id]: e.target.value }))}
+                  onKeyDown={e => e.key === "Enter" && onAddComentario(tarefa.id)}
+                  className="text-xs h-7"
+                />
+                <Button size="sm" className="h-7 text-xs" onClick={() => onAddComentario(tarefa.id)}>OK</Button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </Draggable>
+  );
+}
 
 export default function Tarefas() {
   const navigate = useNavigate();
@@ -58,21 +155,18 @@ export default function Tarefas() {
   const [loading, setLoading] = useState(true);
   const [adminData, setAdminData] = useState(null);
 
-  // Modal criar/editar
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
 
-  // Expanded task (comments)
   const [expanded, setExpanded] = useState(null);
   const [novoComentario, setNovoComentario] = useState({});
   const [loadingComents, setLoadingComents] = useState({});
-
-  // Delete
   const [deleteId, setDeleteId] = useState(null);
 
-  // Filtro
-  const [filtroStatus, setFiltroStatus] = useState("todos");
+  // Filtros
+  const [filtroResponsavel, setFiltroResponsavel] = useState("");
+  const [filtroPrioridade, setFiltroPrioridade] = useState("");
 
   useEffect(() => {
     const stored = localStorage.getItem("adminData");
@@ -101,60 +195,77 @@ export default function Tarefas() {
 
   const handleSave = async () => {
     if (!form.titulo.trim()) { toast.error("Título obrigatório"); return; }
-    try {
-      if (editingId) {
-        await base44.entities.tarefas.update(editingId, form);
-        setTarefas(prev => prev.map(t => t.id === editingId ? { ...t, ...form } : t));
-        logAudit(adminData, "update", editingId, { titulo: form.titulo, status: form.status });
-        toast.success("Tarefa atualizada");
-      } else {
-        const nova = await base44.entities.tarefas.create(form);
-        setTarefas(prev => [nova, ...prev]);
-        logAudit(adminData, "create", nova.id, { titulo: form.titulo, origem: form.origem });
-        toast.success("Tarefa criada");
-      }
-      setShowModal(false);
-      setEditingId(null);
-      setForm(EMPTY_FORM);
-    } catch (e) {
-      toast.error("Erro ao salvar");
+    if (editingId) {
+      const updated = await base44.entities.tarefas.update(editingId, form);
+      setTarefas(prev => prev.map(t => t.id === editingId ? { ...t, ...form, updated_date: new Date().toISOString() } : t));
+      logAudit(adminData, "update", editingId, { titulo: form.titulo, status: form.status });
+      toast.success("Tarefa atualizada");
+    } else {
+      const nova = await base44.entities.tarefas.create(form);
+      setTarefas(prev => [nova, ...prev]);
+      logAudit(adminData, "create", nova.id, { titulo: form.titulo });
+      toast.success("Tarefa criada");
     }
+    setShowModal(false);
+    setEditingId(null);
+    setForm(EMPTY_FORM);
   };
 
   const handleDelete = async () => {
-    try {
-      await base44.entities.tarefas.delete(deleteId);
-      setTarefas(prev => prev.filter(t => t.id !== deleteId));
-      logAudit(adminData, "delete", deleteId, "Tarefa deletada");
-      toast.success("Tarefa deletada");
-      setDeleteId(null);
-    } catch (e) {
-      toast.error("Erro ao deletar");
-    }
+    await base44.entities.tarefas.delete(deleteId);
+    setTarefas(prev => prev.filter(t => t.id !== deleteId));
+    logAudit(adminData, "delete", deleteId, "Tarefa deletada");
+    toast.success("Tarefa deletada");
+    setDeleteId(null);
   };
 
-  const handleStatusChange = async (id, novoStatus) => {
-    await base44.entities.tarefas.update(id, { status: novoStatus });
-    setTarefas(prev => prev.map(t => t.id === id ? { ...t, status: novoStatus } : t));
-    logAudit(adminData, "update", id, { status: novoStatus });
+  const handleEdit = (tarefa) => {
+    setEditingId(tarefa.id);
+    setForm({
+      titulo: tarefa.titulo, descricao: tarefa.descricao || "",
+      status: tarefa.status, prioridade: tarefa.prioridade || "media",
+      prazo: tarefa.prazo || "", responsavel: tarefa.responsavel || "",
+      origem: tarefa.origem || "manual", origem_detalhe: tarefa.origem_detalhe || ""
+    });
+    setShowModal(true);
   };
 
   const handleAddComentario = async (tarefaId) => {
     const texto = novoComentario[tarefaId]?.trim();
     if (!texto) return;
     const c = await base44.entities.comentarios_tarefas.create({
-      tarefa_id: tarefaId,
-      texto,
-      autor_email: adminData?.email || "",
+      tarefa_id: tarefaId, texto, autor_email: adminData?.email || "",
     });
     setComentarios(prev => ({ ...prev, [tarefaId]: [...(prev[tarefaId] || []), c] }));
     setNovoComentario(prev => ({ ...prev, [tarefaId]: "" }));
-    logAudit(adminData, "create", tarefaId, { comentario: texto });
   };
 
-  const filtered = filtroStatus === "todos" ? tarefas : tarefas.filter(t => t.status === filtroStatus);
+  const onDragEnd = async (result) => {
+    const { destination, source, draggableId } = result;
+    if (!destination) return;
+    if (destination.droppableId === source.droppableId && destination.index === source.index) return;
+
+    const novoStatus = destination.droppableId;
+    await base44.entities.tarefas.update(draggableId, { status: novoStatus });
+    setTarefas(prev => prev.map(t =>
+      t.id === draggableId ? { ...t, status: novoStatus, updated_date: new Date().toISOString() } : t
+    ));
+    logAudit(adminData, "update", draggableId, { status: novoStatus, via: "kanban_drag" });
+    toast.success(`Tarefa movida para "${STATUS_CONFIG[novoStatus]?.label}"`);
+  };
+
+  // Responsáveis únicos
+  const responsaveis = [...new Set(tarefas.map(t => t.responsavel).filter(Boolean))];
+
+  // Filtro aplicado
+  const filtered = tarefas.filter(t => {
+    if (filtroResponsavel && t.responsavel !== filtroResponsavel) return false;
+    if (filtroPrioridade && t.prioridade !== filtroPrioridade) return false;
+    return true;
+  });
 
   const counts = tarefas.reduce((acc, t) => { acc[t.status] = (acc[t.status] || 0) + 1; return acc; }, {});
+  const hasFilters = filtroResponsavel || filtroPrioridade;
 
   if (loading) {
     return (
@@ -170,133 +281,102 @@ export default function Tarefas() {
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar />
-      <div className="flex-1 flex flex-col">
-        <main className="flex-1 p-6 max-w-5xl mx-auto w-full space-y-6">
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <main className="flex-1 p-6 space-y-5 overflow-auto">
 
           {/* Header */}
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="font-heading text-2xl font-bold text-foreground">Gerenciamento de Tarefas</h1>
-              <p className="text-xs text-muted-foreground mt-0.5">{tarefas.length} tarefas no total</p>
+              <h1 className="font-heading text-2xl font-bold text-foreground">Kanban de Tarefas</h1>
+              <p className="text-xs text-muted-foreground mt-0.5">{tarefas.length} tarefas · arraste para mover entre colunas</p>
             </div>
             <Button onClick={() => { setEditingId(null); setForm(EMPTY_FORM); setShowModal(true); }} className="gap-2">
               <Plus className="w-4 h-4" /> Nova Tarefa
             </Button>
           </div>
 
-          {/* Status summary */}
-          <div className="grid grid-cols-3 gap-4">
-            {Object.entries(STATUS_CONFIG).map(([key, cfg]) => {
-              const Icon = cfg.icon;
-              return (
-                <button
-                  key={key}
-                  onClick={() => setFiltroStatus(filtroStatus === key ? "todos" : key)}
-                  className={`rounded-2xl p-4 border text-left transition-all ${filtroStatus === key ? cfg.bg + " border-current shadow-sm" : "bg-card border-border hover:bg-muted/40"}`}
-                >
-                  <div className="flex items-center gap-2 mb-1">
-                    <Icon className="w-4 h-4" />
-                    <span className="text-sm font-heading font-semibold">{cfg.label}</span>
-                  </div>
-                  <p className="text-2xl font-bold font-heading">{counts[key] || 0}</p>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Lista */}
-          <div className="space-y-3">
-            {filtered.length === 0 && (
-              <div className="bg-card rounded-2xl p-10 border border-border text-center text-muted-foreground">
-                Nenhuma tarefa encontrada
-              </div>
+          {/* Filtros */}
+          <div className="flex flex-wrap items-center gap-3 bg-card border border-border rounded-xl px-4 py-3">
+            <Filter className="w-4 h-4 text-muted-foreground" />
+            <select
+              value={filtroResponsavel}
+              onChange={e => setFiltroResponsavel(e.target.value)}
+              className="border rounded-lg px-3 py-1.5 text-sm bg-background"
+            >
+              <option value="">Todos responsáveis</option>
+              {responsaveis.map(r => <option key={r} value={r}>{r}</option>)}
+            </select>
+            <select
+              value={filtroPrioridade}
+              onChange={e => setFiltroPrioridade(e.target.value)}
+              className="border rounded-lg px-3 py-1.5 text-sm bg-background"
+            >
+              <option value="">Todas prioridades</option>
+              <option value="alta">Alta</option>
+              <option value="media">Média</option>
+              <option value="baixa">Baixa</option>
+            </select>
+            {hasFilters && (
+              <Button variant="ghost" size="sm" className="gap-1 text-xs h-7" onClick={() => { setFiltroResponsavel(""); setFiltroPrioridade(""); }}>
+                <X className="w-3 h-3" /> Limpar filtros
+              </Button>
             )}
-            {filtered.map(tarefa => {
-              const statusCfg = STATUS_CONFIG[tarefa.status] || STATUS_CONFIG.pendente;
-              const prioCfg = PRIORIDADE_CONFIG[tarefa.prioridade] || PRIORIDADE_CONFIG.media;
-              const origemCfg = ORIGEM_CONFIG[tarefa.origem] || ORIGEM_CONFIG.manual;
-              const OrigemIcon = origemCfg.icon;
-              const isExpanded = expanded === tarefa.id;
-              const vencida = tarefa.prazo && tarefa.status !== "concluida" && new Date(tarefa.prazo) < new Date();
-
-              return (
-                <div key={tarefa.id} className={`bg-card rounded-2xl border shadow-sm transition-all ${vencida ? "border-red-300" : "border-border"}`}>
-                  <div className="p-4">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex flex-wrap items-center gap-2 mb-1">
-                          <span className={`text-xs px-2 py-0.5 rounded-full border font-semibold ${statusCfg.bg}`}>{statusCfg.label}</span>
-                          <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${prioCfg.bg}`}>{prioCfg.label}</span>
-                          <span className="text-xs flex items-center gap-1 text-muted-foreground">
-                            <OrigemIcon className="w-3 h-3" /> {origemCfg.label}
-                          </span>
-                          {vencida && <span className="text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-600 font-semibold flex items-center gap-1"><AlertTriangle className="w-3 h-3" /> Vencida</span>}
-                        </div>
-                        <h3 className="font-heading font-bold text-foreground">{tarefa.titulo}</h3>
-                        {tarefa.descricao && <p className="text-sm text-muted-foreground mt-0.5 line-clamp-2">{tarefa.descricao}</p>}
-                        <div className="flex flex-wrap gap-3 mt-2 text-xs text-muted-foreground">
-                          {tarefa.prazo && <span>📅 {new Date(tarefa.prazo).toLocaleDateString("pt-BR")}</span>}
-                          {tarefa.responsavel && <span>👤 {tarefa.responsavel}</span>}
-                          {tarefa.origem_detalhe && <span className="italic">"{tarefa.origem_detalhe}"</span>}
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1 shrink-0">
-                        <select
-                          value={tarefa.status}
-                          onChange={e => handleStatusChange(tarefa.id, e.target.value)}
-                          className="text-xs border border-input rounded-lg px-2 py-1 bg-background"
-                        >
-                          <option value="pendente">Pendente</option>
-                          <option value="em_andamento">Em Andamento</option>
-                          <option value="concluida">Concluída</option>
-                        </select>
-                        <Button size="sm" variant="ghost" onClick={() => { setEditingId(tarefa.id); setForm({ titulo: tarefa.titulo, descricao: tarefa.descricao || "", status: tarefa.status, prioridade: tarefa.prioridade || "media", prazo: tarefa.prazo || "", responsavel: tarefa.responsavel || "", origem: tarefa.origem || "manual", origem_detalhe: tarefa.origem_detalhe || "" }); setShowModal(true); }}>
-                          <Edit2 className="w-3.5 h-3.5" />
-                        </Button>
-                        <Button size="sm" variant="ghost" onClick={() => toggleExpand(tarefa.id)}>
-                          <MessageSquare className="w-3.5 h-3.5" />
-                          {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                        </Button>
-                        <Button size="sm" variant="ghost" className="text-destructive" onClick={() => setDeleteId(tarefa.id)}>
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Comentários */}
-                  {isExpanded && (
-                    <div className="border-t border-border px-4 pb-4 pt-3 space-y-3">
-                      <p className="text-xs font-heading font-semibold text-muted-foreground uppercase tracking-wide">Histórico de Comentários</p>
-                      {loadingComents[tarefa.id] && <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />}
-                      {(comentarios[tarefa.id] || []).length === 0 && !loadingComents[tarefa.id] && (
-                        <p className="text-xs text-muted-foreground">Nenhum comentário ainda.</p>
-                      )}
-                      {(comentarios[tarefa.id] || []).map(c => (
-                        <div key={c.id} className="bg-muted/40 rounded-lg px-3 py-2">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="text-xs font-semibold text-foreground">{c.autor_email || "Admin"}</span>
-                            <span className="text-xs text-muted-foreground">{new Date(c.created_date).toLocaleString("pt-BR")}</span>
-                          </div>
-                          <p className="text-sm text-foreground">{c.texto}</p>
-                        </div>
-                      ))}
-                      <div className="flex gap-2 mt-2">
-                        <Input
-                          placeholder="Adicionar comentário..."
-                          value={novoComentario[tarefa.id] || ""}
-                          onChange={e => setNovoComentario(prev => ({ ...prev, [tarefa.id]: e.target.value }))}
-                          onKeyDown={e => e.key === "Enter" && handleAddComentario(tarefa.id)}
-                          className="text-sm"
-                        />
-                        <Button size="sm" onClick={() => handleAddComentario(tarefa.id)}>Enviar</Button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+            <span className="text-xs text-muted-foreground ml-auto">{filtered.length} de {tarefas.length} tarefas</span>
           </div>
+
+          {/* Kanban Board */}
+          <DragDropContext onDragEnd={onDragEnd}>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {Object.entries(STATUS_CONFIG).map(([status, cfg]) => {
+                const Icon = cfg.icon;
+                const columnTasks = filtered.filter(t => t.status === status);
+                return (
+                  <div key={status} className={`rounded-2xl border-2 ${cfg.col} flex flex-col min-h-[400px]`}>
+                    {/* Column header */}
+                    <div className={`flex items-center justify-between px-4 py-3 rounded-t-xl ${cfg.header}`}>
+                      <div className="flex items-center gap-2">
+                        <Icon className="w-4 h-4" />
+                        <span className="font-heading font-bold text-sm">{cfg.label}</span>
+                      </div>
+                      <span className="text-xs font-bold bg-white/60 px-2 py-0.5 rounded-full">{counts[status] || 0}</span>
+                    </div>
+
+                    {/* Droppable area */}
+                    <Droppable droppableId={status}>
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.droppableProps}
+                          className={`flex-1 p-3 transition-colors rounded-b-2xl ${snapshot.isDraggingOver ? "bg-white/60" : ""}`}
+                        >
+                          {columnTasks.length === 0 && !snapshot.isDraggingOver && (
+                            <p className="text-xs text-center text-muted-foreground mt-6 opacity-60">Nenhuma tarefa</p>
+                          )}
+                          {columnTasks.map((tarefa, index) => (
+                            <TarefaCard
+                              key={tarefa.id}
+                              tarefa={tarefa}
+                              index={index}
+                              onEdit={handleEdit}
+                              onDelete={setDeleteId}
+                              onToggleExpand={toggleExpand}
+                              expanded={expanded}
+                              comentarios={comentarios}
+                              loadingComents={loadingComents}
+                              novoComentario={novoComentario}
+                              setNovoComentario={setNovoComentario}
+                              onAddComentario={handleAddComentario}
+                            />
+                          ))}
+                          {provided.placeholder}
+                        </div>
+                      )}
+                    </Droppable>
+                  </div>
+                );
+              })}
+            </div>
+          </DragDropContext>
         </main>
         <Footer />
       </div>
@@ -347,7 +427,7 @@ export default function Tarefas() {
               </select>
             </div>
             {form.origem !== "manual" && (
-              <Input placeholder="Detalhe da origem (ex: categoria com baixa nota)" value={form.origem_detalhe} onChange={e => setForm(f => ({ ...f, origem_detalhe: e.target.value }))} />
+              <Input placeholder="Detalhe da origem" value={form.origem_detalhe} onChange={e => setForm(f => ({ ...f, origem_detalhe: e.target.value }))} />
             )}
           </div>
           <DialogFooter>
@@ -357,7 +437,6 @@ export default function Tarefas() {
         </DialogContent>
       </Dialog>
 
-      {/* Confirm delete */}
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
